@@ -154,7 +154,7 @@ changing the `I2C_ADDRESS ` in the `my_configuration.py` file
 First clone the software from Github (This needs updating) 
 ```
 cd
-git -c http.sslVerify=false clone https://gitlab.v2d.co.uk:743/v2d/ai_object_plus_water.git
+git clone https://github.com/dave-ct/ai_object_plus_water.git
 
 ```
 Create a new `venv` that inherits the site packages, activate it and make sure all packages are installed
