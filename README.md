@@ -2,6 +2,13 @@
 
 **This is work in progress, documentation will get better!!**
 
+This project is the follow up to a recent prototype (image below) for a device to deter squirrels, Jays, Magpies and Pigeons. The
+original prototype used a pimornoi pan tilt hat but the servos
+did not have the power to support the waterpistol componets well.   Although it did work it still needed alot of improvements...
+![Prototype](docs/images/prototype.png)
+
+
+
 This is still a work in progress and is shared to allow others to create their own personal devices to use. 
 If you are beginner with a raspberry PI you may wish to try other projects first and get familiar with them. 
 We will be releasing a kit to purchase that will make it easier and a fully assembled product. 
@@ -226,7 +233,9 @@ If you are accessing the raspberry pi remotely use the IP address of your raspbe
 The web interface is currently not secure and anyone on the network your raspberry pi is connected to can access it.
 
 
-
+***
+## AI Models
+Add details on the current trained models here. (ToDo)
 
 
 ***
