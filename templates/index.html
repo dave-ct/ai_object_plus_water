@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Ensures mobile devices scale properly -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Camera Feed</title>
+
+    <style>
+      /* Basic reset and body styling */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+      }
+      /* Container for everything */
+      .container {
+        max-width: 900px; /* adjust as you like */
+        margin: 0 auto;
+        padding: 1em;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+      h1 {
+        margin-top: 0;
+      }
+      /* We reduce top/bottom margins on sections to keep everything closer. */
+      .mode-buttons {
+        margin: 0.5em 0;
+      }
+      /* Make the image responsive */
+      .video-container img {
+        max-width: 100%;  /* Scale down for smaller devices */
+        height: auto;
+        border: 1px solid #ccc;
+      }
+      hr {
+        margin: 0.5em 0;
+      }
+      button {
+        background: #007BFF;
+        color: white;
+        padding: 0.5em 1em;
+        border: none;
+        border-radius: 4px;
+        margin: 0.25em;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      /* For a "stop" or danger action, you could color them differently */
+      .danger {
+        background: #dc3545;
+      }
+      /* Hidden utility class */
+      .hidden {
+        display: none;
+      }
+      /* Flexible row to hold water pistol + manual movement side by side */
+      .flex-row {
+        display: flex;
+        flex-wrap: wrap;  /* allows wrapping on smaller screens */
+        gap: 1em;         /* spacing between columns */
+        align-items: flex-start; /* align columns at the top */
+      }
+      /* Each column in the flex row */
+      .column {
+        flex: 1;   /* each column can grow/shrink equally */
+        min-width: 200px; /* ensures columns don't shrink too small */
+      }
+      /* Center direction buttons within their column */
+      .direction-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .direction-buttons-row {
+        display: flex;
+        justify-content: center;
+        margin: 0.5em 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Live Camera Feed</h1>
+
+      <!-- Mode Toggle Buttons (just under the heading) -->
+      <div class="mode-buttons">
+        <button onclick="setMode('auto')">Auto Mode</button>
+        <button onclick="setMode('manual')">Manual Mode</button>
+      </div>
+
+      <hr>
+
+      <!-- Camera Feed -->
+      <div class="video-container">
+        <img src="/video_feed" alt="Camera Stream">
+      </div>
+
+      <hr>
+
+      <!-- Flex row for Water Pistol (left) and Manual Movement (right) -->
+      <div class="flex-row">
+        <!-- Water Pistol (always visible) -->
+        <div class="column" id="waterPistolControls">
+          <button onclick="fetch('/water_pistol?action=start')">Start Water</button>
+          <button class="danger" onclick="fetch('/water_pistol?action=stop')">Stop Water</button>
+        </div>
+
+        <!-- Manual Movement (hidden by default) -->
+        <div class="column hidden" id="manualControls">
+          <div class="direction-buttons">
+            <div class="direction-buttons-row">
+              <button onclick="movePanTilt('up')">Up</button>
+            </div>
+            <div class="direction-buttons-row">
+              <button onclick="movePanTilt('left')">Left</button>
+              <button onclick="movePanTilt('right')">Right</button>
+            </div>
+            <div class="direction-buttons-row">
+              <button onclick="movePanTilt('down')">Down</button>
+            </div>
+          </div>
+          <button onclick="setHomePosition()">Set Current Position as Home</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentMode = 'auto';  // start in AUTO by default
+
+      function setMode(mode) {
+        fetch(`/set_mode?mode=${mode}`)
+          .then(response => {
+            if (!response.ok) {
+              alert("Error setting mode: " + response.statusText);
+            } else {
+              currentMode = mode;
+              toggleManualControls(mode);
+            }
+          })
+          .catch(err => alert("Failed to set mode: " + err));
+      }
+
+      function toggleManualControls(mode) {
+        const manualDiv = document.getElementById('manualControls');
+        if (mode === 'manual') {
+          manualDiv.classList.remove('hidden');
+        } else {
+          manualDiv.classList.add('hidden');
+        }
+      }
+
+      function movePanTilt(direction) {
+        if (currentMode !== 'manual') {
+          alert("Please switch to MANUAL mode first.");
+          return;
+        }
+        fetch(`/move?direction=${direction}`)
+          .then(response => {
+            if (!response.ok) {
+              alert("Error moving pan/tilt: " + response.statusText);
+            }
+          })
+          .catch(err => alert("Failed to move pan/tilt: " + err));
+      }
+
+      function setHomePosition() {
+        if (currentMode !== 'manual') {
+          alert("Please switch to MANUAL mode to set home position.");
+          return;
+        }
+        fetch('/set_home')
+          .then(response => {
+            if (!response.ok) {
+              alert("Error setting home: " + response.statusText);
+            } else {
+              alert("Home position updated.");
+            }
+          })
+          .catch(err => alert("Failed to set home position: " + err));
+      }
+    </script>
+  </body>
+</html>
+
