@@ -107,6 +107,9 @@ Make sure you use the correct cable that comes with it.
 TBC to completed, will contain how to put it all together.  But breifly make sure 
 the camera and water pump are mounted on the pan/tilt device and aligned.
 
+This diagram shows an example mounting everything including the raspberry pi in a box ontop of the pan/tilt mechanism.
+![Sample Assembly](docs/images/assembly_black_box.png)
+
 
 ***
 # Getting it running
