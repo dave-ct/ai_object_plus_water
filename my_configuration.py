@@ -36,12 +36,12 @@ TILT_INVERT = True  # If True, tilt movement is inverted
 DEAD_ZONE = 20
 
 # Set the default PanTilt home angles when it starts up
-HOME_PAN  = 15.0
-HOME_TILT = 20.0
+HOME_PAN  = 0.0
+HOME_TILT = 0.0
 
 # Move smoothing, adjust to make the movement smoother or more aggressive
-MOVE_STEPS = 20
-MOVE_STEP_DELAY = 0.05
+MOVE_STEPS = 15
+MOVE_STEP_DELAY = 0.02
 
 #Picamera settings
 
@@ -55,6 +55,9 @@ LOW_RES_STREAM_RESOLUTION = (640, 360)
 #If the camera is mounted upside down set to True
 FLIP_VERTICALLY = False
 FLIP_HORIZONTALLY = False
+
+SAVE_DIRECTORY_NAME = "./saved_videos/"
+DELETE_CONVERTED_FILES = True #If True Delete the .h264 version once converted to MP4
 
 
 

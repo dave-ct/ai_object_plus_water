@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------------
 
 import my_configuration as config
-from flask import Flask, render_template, Response, request
+from flask import Flask, render_template, Response, request, send_from_directory, jsonify
 import logging
 import sys
 import threading
@@ -22,6 +22,10 @@ from picamera2.devices.imx500 import (NetworkIntrinsics,
 from libcamera import Transform
 import RPi.GPIO as GPIO
 
+import os
+import subprocess
+import math
+
 # --------------------------------------------------------------------------------
 #  TUNING PARAMETERS (SET FROM my_confgiuration.py)
 # --------------------------------------------------------------------------------
@@ -36,6 +40,8 @@ HOME_TILT = config.HOME_TILT
 MOVE_STEPS = config.MOVE_STEPS
 MOVE_STEP_DELAY = config.MOVE_STEP_DELAY
 SHOW_PREVIEW = config.SHOW_PREVIEW
+SAVE_DIRECTORY = config.SAVE_DIRECTORY_NAME
+DELETE_CONVERTED_FILES = config.DELETE_CONVERTED_FILES
 
 # -----------------------------------------------------------------------------
 #  LOGGING SETUP
@@ -102,6 +108,81 @@ def gen_frames():
             # If no frame yet, just sleep briefly
             time.sleep(0.05)
 
+
+@app.route("/recordings")
+def show_recordings():
+    page = request.args.get("page", 1, type=int)  # Get ?page=<int>, default to 1
+    page_size = 5  # Show 5 recordings per page
+
+    # Get all MP4s
+    all_files = [
+        f for f in os.listdir(SAVE_DIRECTORY)
+        if f.lower().endswith(".mp4")
+    ]
+    # Sort by modification time descending (newest first)
+    all_files.sort(
+        key=lambda x: os.path.getmtime(os.path.join(SAVE_DIRECTORY, x)),
+        reverse=True
+    )
+
+    # Convert to a list of dicts: {filename, datetime_str}
+    # so the template can show the date/time easily.
+    all_file_info = []
+    for f in all_files:
+        file_path = os.path.join(SAVE_DIRECTORY, f)
+        mtime = os.path.getmtime(file_path)
+        # Format the mtime as "YYYY-MM-DD HH:MM:SS"
+        datetime_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(mtime))
+        all_file_info.append({
+            "filename": f,
+            "datetime_str": datetime_str
+        })
+
+    # Pagination logic
+    total_files = len(all_file_info)
+    total_pages = math.ceil(total_files / page_size)
+
+    # Slice out the files for this page
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    page_files = all_file_info[start_idx:end_idx]
+
+    return render_template("recordings.html",
+                           files=page_files,    # the 5 (or fewer) items for this page
+                           page=page,
+                           total_pages=total_pages)
+
+
+@app.route("/video/<path:filename>")
+def serve_video(filename):
+    """
+    Serve an MP4 file from SAVE_DIRECTORY.
+    """
+    return send_from_directory(SAVE_DIRECTORY, filename)
+
+
+@app.route("/delete_recording", methods=["POST"])
+def delete_recording():
+    """
+    Delete a recording file specified by JSON data: {"filename": "..."}
+    Returns JSON {"status": "ok"} on success, or {"status": "error"} on failure.
+    """
+    data = request.get_json()
+    if not data or "filename" not in data:
+        return jsonify({"status": "error", "message": "No filename provided"}), 400
+
+    filename = data["filename"]
+    file_path = os.path.join(SAVE_DIRECTORY, filename)
+
+    if not os.path.exists(file_path):
+        return jsonify({"status": "error", "message": "File not found"}), 404
+
+    try:
+        os.remove(file_path)
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        logger.error(f"Error deleting file {filename}: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route("/set_mode")
 def set_mode():
@@ -226,6 +307,48 @@ def video_feed():
 # -----------------------------------------------------------------------------
 #  Main Classes and Functions
 # -----------------------------------------------------------------------------
+
+def convert_saved_video(filename):
+    """
+    Convert the file passed in to MP4 format using ffmpeg (ensuring no quality is lost).
+    The converted MP4 is saved into SAVE_DIRECTORY. If SAVE_DIRECTORY does not exist,
+    it will be created.
+
+    If DELETE_CONVERTED_FILES is True, the original file is deleted after conversion.
+
+    :param filename: The path to the original video file (e.g., .h264) to convert
+    """
+    # Ensure save directory exists
+    if not os.path.exists(SAVE_DIRECTORY):
+        os.makedirs(SAVE_DIRECTORY)
+
+    # Construct output filename with .mp4 extension inside SAVE_DIRECTORY
+    base_name = os.path.splitext(os.path.basename(filename))[0]  # e.g., "capture_01_01_22_12_00_00"
+    mp4_filename = os.path.join(SAVE_DIRECTORY, base_name + ".mp4")
+
+    try:
+        # Call ffmpeg to do a container copy (no re-encode) to avoid quality loss
+        subprocess.run([
+            "ffmpeg", "-i", filename,
+            "-c:v", "copy",
+            "-c:a", "copy",
+            mp4_filename
+        ], check=True)
+
+        # If configured to delete original file, remove it
+        if DELETE_CONVERTED_FILES:
+            os.remove(filename)
+
+        # Optionally log success if you have a logger
+        logger.info(f"Converted {filename} to {mp4_filename} (DELETE_CONVERTED_FILES={DELETE_CONVERTED_FILES}).")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"ffmpeg failed to convert {filename} to {mp4_filename}. Error: {e}")
+        # If needed, handle the error more gracefully here
+
+
+
+
 
 class PanTiltControllerWrapper:
     """
@@ -383,6 +506,9 @@ class RecordingManager:
             logger.info("[RecordingManager] Stopping recording...")
             self.picam2.stop_recording()
             self.recording = False
+
+            #Now convert the file
+            convert_saved_video(self.filename)
 
 
 class TargetTracker:
