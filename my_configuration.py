@@ -6,11 +6,14 @@ LOG_FILE = None        # If set to a filename (e.g. "my_log.log"), logs to a fil
 
 # Servo Settings (assumes both servos are the sme type)  By default set for servo of type MG996R which can do 180 degrees
 PWM_FREQUENCY = 50
-MIN_PULSE = 150  # Pulse length for -90 degrees
-MAX_PULSE = 565  # Pulse length for +90 degrees
+MIN_PULSE = 103  # Pulse length for -90 degrees
+MAX_PULSE = 512  # Pulse length for +90 degrees
 CENTER_PULSE = (MIN_PULSE + MAX_PULSE) // 2
 ANGLE_RANGE = 90  # Range of motion in degrees 90 = (-90 to +90)
 #Todo - Make is possible ot have two different types of servos with different degree settings.
+
+# Note: MG996R Servro PWM_FREQUENCY = 50 MIN_PULSE = 150 MAX_PULSE = 565
+# Note: GXservo 43Kg PWM_FREQUENCY = 50 MIN_PULSE = 103 MAX_PULSE = 512
 
 #PCA9685 i2c settings and servo channels
 I2C_ADDRESS = 0x40
@@ -37,7 +40,7 @@ HOME_PAN  = 15.0
 HOME_TILT = 20.0
 
 # Move smoothing, adjust to make the movement smoother or more aggressive
-MOVE_STEPS = 5
+MOVE_STEPS = 20
 MOVE_STEP_DELAY = 0.05
 
 #Picamera settings

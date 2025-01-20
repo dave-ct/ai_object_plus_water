@@ -115,7 +115,7 @@ def set_mode():
     mode = request.args.get("mode", "auto")
     if mode.lower() == "auto":
         water_pistol.stop()
-        pan_tilt_control.move_to(HOME_PAN, HOME_TILT, steps=2, step_delay=0.05)
+        pan_tilt_control.move_to(HOME_PAN, HOME_TILT, steps=config.MOVE_STEPS, step_delay=config.MOVE_STEP_DELAY)
         auto_mode = True
         logger.info("Switched to AUTO mode")
     else:
@@ -147,16 +147,16 @@ def move():
     current_pan, current_tilt = pan_tilt_control.get_current_angles()
     if direction == "down":
         new_tilt = current_tilt - step_degrees  # tilt decreases as you go up
-        pan_tilt_control.move_to(current_pan, new_tilt, steps=2, step_delay=0.05)
+        pan_tilt_control.move_to(current_pan, new_tilt, steps=config.MOVE_STEPS, step_delay=config.MOVE_STEP_DELAY)
     elif direction == "up":
         new_tilt = current_tilt + step_degrees
-        pan_tilt_control.move_to(current_pan, new_tilt, steps=2, step_delay=0.05)
+        pan_tilt_control.move_to(current_pan, new_tilt, steps=config.MOVE_STEPS, step_delay=config.MOVE_STEP_DELAY)
     elif direction == "right":
         new_pan = current_pan - step_degrees
-        pan_tilt_control.move_to(new_pan, current_tilt, steps=2, step_delay=0.05)
+        pan_tilt_control.move_to(new_pan, current_tilt, steps=config.MOVE_STEPS, step_delay=config.MOVE_STEP_DELAY)
     elif direction == "left":
         new_pan = current_pan + step_degrees
-        pan_tilt_control.move_to(new_pan, current_tilt, steps=2, step_delay=0.05)
+        pan_tilt_control.move_to(new_pan, current_tilt, steps=config.MOVE_STEPS, step_delay=config.MOVE_STEP_DELAY)
     else:
         return f"Unknown direction: {direction}", 400
 
@@ -304,8 +304,8 @@ class PanTiltControllerWrapper:
                 HOME_PAN, HOME_TILT,
                 #steps=self.move_steps,
                 #step_delay=self.move_step_delay
-                steps=10,
-                step_delay=0.4
+                steps=config.MOVE_STEPS,
+                step_delay=config.MOVE_STEP_DELAY
             )
             self.is_moving = False
         t = threading.Thread(target=do_home, daemon=True)

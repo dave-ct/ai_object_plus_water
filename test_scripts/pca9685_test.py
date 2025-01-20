@@ -4,8 +4,8 @@ from Adafruit_PCA9685 import PCA9685
 
 # Constants
 PWM_FREQUENCY = 50
-MIN_PULSE = 150  # Pulse length for -90 degrees
-MAX_PULSE = 565  # Pulse length for +90 degrees
+MIN_PULSE = 102  # Pulse length for -90 degrees
+MAX_PULSE = 512  # Pulse length for +90 degrees
 CENTER_PULSE = (MIN_PULSE + MAX_PULSE) // 2  # Pulse length for 0 degrees
 ANGLE_RANGE = 90  # Range of motion in degrees (-90 to +90)
 
@@ -46,14 +46,18 @@ if __name__ == "__main__":
 
     try:
         while True:
+
+
             # Test angles: move to -90, 0, and +90 degrees
-            for angle in [-90, 0, 90, 0]:
+            for angle in [0, 90, 0, -90, 0]:
                 print(f"Moving pan to {angle} degrees")
                 set_servo_angle(channel_pan, angle)
 
                 print(f"Moving tilt to {angle} degrees")
                 set_servo_angle(channel_tilt, angle)
                 time.sleep(1)
+
+
 
     except KeyboardInterrupt:
         print("Exiting...")
