@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<dnnParams>
+    <networks>
+        <network name="best_imx" ordinal="0" type="">
+            <inputTensors>
+                <inputTensor persistency="0" ordinal="0" name="Placeholder.input.uid1:0" l2Offset="1571360" numOfDimensions="3" bitsPerElement="8" shift="0" scale="0.00390625" format="unsigned">
+                    <dimensions>
+                        <dimension size="3" serializationOrder="2" ordinal="0" padding="0"/>
+                        <dimension size="640" serializationOrder="1" ordinal="1" padding="0"/>
+                        <dimension size="640" serializationOrder="0" ordinal="2" padding="0"/>
+                    </dimensions>
+                </inputTensor>
+            </inputTensors>
+            <outputTensors>
+                <outputTensor ordinal="1" name="transform-87-/MultiClassNMS:0" l2Offset="338464" numOfDimensions="1" bitsPerElement="8" shift="0" scale="0.00390625" format="unsigned">
+                    <dimensions>
+                        <dimension size="300" serializationOrder="0" ordinal="0" padding="0"/>
+                    </dimensions>
+                </outputTensor>
+                <outputTensor ordinal="2" name="transform-88-/MultiClassNMS:0" l2Offset="339488" numOfDimensions="1" bitsPerElement="16" shift="0" scale="1.0" format="signed">
+                    <dimensions>
+                        <dimension size="300" serializationOrder="0" ordinal="0" padding="0"/>
+                    </dimensions>
+                </outputTensor>
+                <outputTensor ordinal="3" name="transform-89-/MultiClassNMS:0" l2Offset="337440" numOfDimensions="1" bitsPerElement="16" shift="0" scale="1.0" format="signed">
+                    <dimensions>
+                        <dimension size="1" serializationOrder="0" ordinal="0" padding="0"/>
+                    </dimensions>
+                </outputTensor>
+                <outputTensor ordinal="0" name="transform-90-/MultiClassNMS:0" l2Offset="340512" numOfDimensions="2" bitsPerElement="16" shift="0" scale="0.03125" format="signed">
+                    <dimensions>
+                        <dimension size="300" serializationOrder="0" ordinal="0" padding="0"/>
+                        <dimension size="4" serializationOrder="1" ordinal="1" padding="0"/>
+                    </dimensions>
+                </outputTensor>
+            </outputTensors>
+        </network>
+    </networks>
+    <l2memory totalSize="8388480" coefficientsSize="2526560" reservedMemorySize="1024" networksRuntimeSize="5524480"/>
+</dnnParams>

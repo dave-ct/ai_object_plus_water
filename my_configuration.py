@@ -61,10 +61,10 @@ DELETE_CONVERTED_FILES = True #If True Delete the .h264 version once converted t
 
 
 
-MODEL = "models/big_data_a2_200e_32b/network.rpk"
+MODEL = "models/train_all_yolov8n_150_32/network.rpk"
 # Path to the AI inference model (an .rpk file) used by the IMX500 for object detection.
 
-LABELS = "models/big_data_a2_200e_32b/labels.txt"
+LABELS = "models/train_all_yolov8n_150_32/labels.txt"
 # Path to the file containing the label names (one label per line).
 
 FPS = 25
@@ -79,7 +79,7 @@ BBOX_ORDER = "xy"
 # "xy" => (x0, y0, x1, y1)
 # "yx" => (y0, x0, y1, x1)
 
-THRESHOLD = 0.45
+THRESHOLD = 0.30
 # Minimum detection confidence (0.0–1.0) required for a detection to be valid.
 
 IOU = 0.65

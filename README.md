@@ -318,15 +318,27 @@ By having a DEAD_ZONE, the camera avoids jittery motion when the target is alrea
 
 
 ***
-## AI Models
+## AI Models for AI Camera
 The current object detection model is derived from a custom trained yolov8n on over 20,000 images.  After training it was 
 quantized and exported using YOLO in the `imx` format.  After which it is then converted to `.rpk` format.
-The model used on othe Raspberry Pi AI camera is located at `models/big_data_a2_200e_32b/network.rpk`.
 
-The assaociated label file is located as `models/big_data_a2_200e_32b/network.rpk`
+Models are available in this repository are in the below table, just update the `my_configuration.py` with the details for the mode 
+you want to use, that is update `MODEL =` and `LABEL = `
+
+| Model Name                     | Animals Trained On                       | Model File to Use                                   | Label File to Use                                  |
+|--------------------------------|------------------------------------------|-----------------------------------------------------|----------------------------------------------------|
+| train_all_yolov8n_150_32       | Squirrels, Cats, Piegons, Magpies & Jays | `models/train_all_yolov8n_150_32/network.rpk`       | `models/train_all_yolov8n_150_32/labels.txt`       |
+| train_cats_yolov8n_150_32      | Cats                                     | `models/train_cats_yolov8n_150_32/network.rpk`      | `models/train_cats_yolov8n_150_32/labels.txt`      |
+| train_jays_yolov8n_150_32      | Jays                                     | `models/train_jays_yolov8n_150_32/network.rpk`      | `models/train_jays_yolov8n_150_32/labels.txt`      |
+| train_magpies_yolov8n_150_32   | Magpies                                  | `models/train_magpies_yolov8n_150_32/network.rpk`   | `models/train_magpies_yolov8n_150_32/labels.txt`   |
+| train_pigeons_yolov8n_150_32   | Piegons                                  | `models/train_pigeons_yolov8n_150_32/network.rpk`   | `mmodels/train_pigeons_yolov8n_150_32/labels.txt`  |
+| train_squirrels_yolov8n_150_32 | Squirrels                                | `models/train_squirrels_yolov8n_150_32/network.rpk` | `models/train_squirrels_yolov8n_150_32/labels.txt` |
+| big_data_a2_200e_32b           | Squirrels, Piegons, Magpies & Jays       | `models/big_data_a2_200e_32b/network.rpk`           | `models/big_data_a2_200e_32b/labels.txt`           |
 
 
-### Model Yolov8n - big_data_a2_200e_32b
+
+
+### Example Model Yolov8n - big_data_a2_200e_32b
 
 When training this model an open source dataset was used for the squirrels and custom datasets with annotations where 
 created for the jays, piegons and magpies.
