@@ -79,7 +79,7 @@ BBOX_ORDER = "xy"
 # "xy" => (x0, y0, x1, y1)
 # "yx" => (y0, x0, y1, x1)
 
-THRESHOLD = 0.30
+THRESHOLD = 0.50
 # Minimum detection confidence (0.0–1.0) required for a detection to be valid.
 
 IOU = 0.65

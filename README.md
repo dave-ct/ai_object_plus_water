@@ -131,7 +131,7 @@ sudo apt upgrade
 sudo apt install imx500-all
 sudo apt install python3-opencv python3-munkres
 sudo apt install python3 python3-venv python3-pip
-sudo apt install ffmpeg
+sudo apt install ffmpeg git
 ```
 
 Enable I2C port on the raspberry pi and reboot (this will be needed for the PCA9685)
