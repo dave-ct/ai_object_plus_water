@@ -473,6 +473,26 @@ class WaterPistolController:
         """Clean up GPIO settings - should be called when program exits"""
         GPIO.cleanup()
 
+def convert_saved_video_async(filename):
+    """
+        Converts the saved video to a different format asynchronously.
+
+        The function initiates a background thread to convert a saved video
+        file to the desired format without blocking the main thread's execution.
+        It is helpful for Raspberry PI zero2w which doe snot have alot of resources
+
+        Args:
+            filename (str): The path of the video file to be converted.
+
+        Returns:
+            None
+    """
+    def convert():
+        convert_saved_video(filename)
+    threading.Thread(target=convert, daemon=True).start()
+
+
+
 class RecordingManager:
     """
     Provides functionality to manage video recording via a Picamera2 instance.
@@ -509,6 +529,8 @@ class RecordingManager:
 
             #Now convert the file
             convert_saved_video(self.filename)
+            # USe the below instead if on Raspberry Pi Zero2w
+            # convert_saved_video_async(self.filename)
 
 
 class TargetTracker:
