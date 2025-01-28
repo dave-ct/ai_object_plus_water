@@ -396,6 +396,8 @@ The imports may also need tweeking (I have not tested this recently but provided
 Software is Licensed under Apache 2 with a common clause so it cannot be used for commercial purposes at this time.  See the [LICENSE](LICENSE) file for details.
 Basically this is just for personal use for people who want to build their own device.
 
+If you use the models derived from Yolov8 see the [license file](models/LICENSE)
+
 ***
 ## Common Issues
 ### Raspberry Pi Zero 2w - Stops detecting after first recording.
