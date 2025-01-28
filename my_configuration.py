@@ -1,7 +1,7 @@
 # Setup all the configurable aspects in this file
 
 #Setup the logging
-LOG_LEVEL = "INFO"     # or "DEBUG", "WARNING", "ERROR", "CRITICAL"
+LOG_LEVEL = "DEBUG"     # or "DEBUG", "WARNING", "ERROR", "CRITICAL"
 LOG_FILE = None        # If set to a filename (e.g. "my_log.log"), logs to a file; if None, logs to console
 
 # Servo Settings (assumes both servos are the sme type)  By default set for servo of type MG996R which can do 180 degrees
@@ -25,23 +25,23 @@ TILT_SERVO_CHANNEL = 1
 REPLAY_PIN = 14
 
 # How many degrees to move per pixel offset when tracking an object
-PAN_DEG_PER_PIXEL = 0.03
-TILT_DEG_PER_PIXEL = 0.03
+PAN_DEG_PER_PIXEL = 0.005
+TILT_DEG_PER_PIXEL = 0.005
 
 # Reverse directions if needed (if you go up instead of down and left instead of right)
 PAN_INVERT = True  # If True, pan movement is inverted
 TILT_INVERT = True  # If True, tilt movement is inverted
 
 # Zone around center in which we do NOT move (pixels) when tracking, so if the we are within dead_zone (in the centre of the image) we wont move any further
-DEAD_ZONE = 20
+DEAD_ZONE = 40
 
 # Set the default PanTilt home angles when it starts up
 HOME_PAN  = 0.0
-HOME_TILT = 0.0
+HOME_TILT = 20.0
 
 # Move smoothing, adjust to make the movement smoother or more aggressive
-MOVE_STEPS = 15
-MOVE_STEP_DELAY = 0.02
+MOVE_STEPS = 1
+MOVE_STEP_DELAY = 0.00
 
 #Picamera settings
 

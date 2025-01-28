@@ -49,14 +49,23 @@ if __name__ == "__main__":
 
 
             # Test angles: move to -90, 0, and +90 degrees
-            for angle in [0, 90, 0, -90, 0]:
-                print(f"Moving pan to {angle} degrees")
-                set_servo_angle(channel_pan, angle)
+            # for angle in [0, 90, 0, -90, 0]:
+            #     print(f"Moving pan to {angle} degrees")
+            #     set_servo_angle(channel_pan, angle)
+            #
+            #     print(f"Moving tilt to {angle} degrees")
+            #     set_servo_angle(channel_tilt, angle)
+            #     time.sleep(1)
+            for angle_pan in [0]:
 
-                print(f"Moving tilt to {angle} degrees")
-                set_servo_angle(channel_tilt, angle)
+            # angle_pan = 0
+                angle_tilt = 20
+
+                print(f"Moving pan to {angle_pan} degrees")
+                set_servo_angle(channel_pan, angle_pan)
+                print(f"Moving tilt to {angle_tilt} degrees")
+                set_servo_angle(channel_tilt, angle_tilt)
                 time.sleep(1)
-
 
 
     except KeyboardInterrupt:
