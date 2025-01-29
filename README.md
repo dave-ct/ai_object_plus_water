@@ -50,10 +50,10 @@ need but can be sourced from any supplier :-)  Will add other links later
 | Electric Water Pistol   | [Amazon](https://www.amazon.co.uk/dp/B0BWNDTKFJ)                                     |
 | Pantilt Mechanism       | [Ali Express](https://www.aliexpress.com/item/1406199345.html)                       |
 | 2 x Servos              | [Ali Express](https://www.aliexpress.com/item/1005007208312977.html)                 |
-| Power Supply            | Work In Prgress, will update soon                                                    |
+| Power Supply            | [See Power Supply Section](#Power-Supply)                                            |
 | Cables                  | TBC                                                                                  |
 | Tubing for water pistol | [Amazon](https://www.amazon.co.uk/dp/B07PNQ5BXD)                                     |
-| Case fro Compnents      | Whatever fits, will add 3d printed one later                                         |
+| Case fro Components     | Whatever fits, will add 3d printed one later                                         |
 
 ***
 # Connecting the parts together
@@ -96,6 +96,31 @@ Finally connect the power supply for ther servos the PCA9685.
 The below diagram shows the overall circuit wiring for the servos and the water pump dc motor.
 Note that the batteries in the image are just for illustration purposes
 ![wiring](docs/images/Wiring.png)
+
+### Power Supply
+To be able to run all the components from a single power supply I used a spare 12v 10Amp 
+power supply and then three buck converters to seperate the  power sources.
+The diagram below shows how it was wired up.
+![power_supply](docs/images/Power_Supply.png)
+May require a 470uf capacitor across the motor that drives the waterpump mechanism (TBC)
+
+This table shows the key parts that can be used
+
+| Description                        | Link                                                     |
+|------------------------------------|----------------------------------------------------------|
+| 12v 10Amp Power Supply (110v/240v) | [Amazon](https://www.amazon.co.uk/gp/product/B07J43TMYW) |
+| Buck Converter 12v to 5v DC        | [Amazon](https://www.amazon.co.uk/dp/B09PFV3SWN)         |
+| In line 5mm x 20mm fuse holder     | [Amazon](https://www.amazon.co.uk/dp/B07C58WPL7)|        
+| 3amp slow blow 5mm x 20mm fuse     | [Amazon](https://www.amazon.co.uk/dp/B08FJ7DSBX)         |
+| 3amp quick blow 5mm x 20mm fuse    | [Amazon](https://www.amazon.co.uk/F5AL250V-Cartridge-Household-Appliances-Electricals/dp/B0D8VP5YD3)|
+
+
+If using a raspberry PI5 the above may not work, need to test, but you should be able to use a Power PD Trigger Activation Module instead of one of the buck converters
+and also use a 5amp fuse instead of a 3amp fuse.  **This has not been tested yet, but will be soon**.
+
+| Description                        | Link                                                                        |
+|------------------------------------|-----------------------------------------------------------------------------|
+|Raspberry Pi5 Power PD Trigger Activation Module Jetson 5V5A 27W PD DC USB Dual Input Wide Voltage Dual Output for PI 5| [Ali Express](https://www.aliexpress.com/item/1005007096153347.html)        |
 
 
 ### AI Camera
