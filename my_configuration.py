@@ -1,5 +1,7 @@
 # Setup all the configurable aspects in this file
 
+RASPBERRY_PI_ZERO_2W = False # This will be auto updated by code now as will detect the platform.
+
 #Setup the logging
 LOG_LEVEL = "DEBUG"     # or "DEBUG", "WARNING", "ERROR", "CRITICAL"
 LOG_FILE = None        # If set to a filename (e.g. "my_log.log"), logs to a file; if None, logs to console

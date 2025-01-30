@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Ensures mobile devices scale properly -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Info</title>
+
+    <style>
+      /* Basic reset and body styling */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+      }
+
+      .container {
+        max-width: 900px; /* adjust as you like */
+        margin: 0 auto;
+        padding: 1em;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+
+      /*
+       * We reduce top/bottom margins on sections to keep everything closer
+       * and align the heading + button in a row (flex).
+       */
+      h1 {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      h1 button {
+        font-size: 1rem;
+        margin-left: 1em;
+      }
+      hr {
+        margin: 0.5em 0;
+      }
+      .info-container p {
+        margin: 0.3em 0;
+      }
+      button {
+        background: #007BFF;
+        color: white;
+        padding: 0.5em 1em;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+
+      /* Optional: style for the packages list */
+      .packages-list {
+        margin: 0.5em 0;
+        padding: 0;
+        list-style-type: none;
+      }
+      .packages-list li {
+        margin: 0.2em 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Page Title + Home Button -->
+      <h1>
+        System Info
+        <button onclick="location.href='/'">Home</button>
+      </h1>
+      <hr>
+
+      <!-- Main info container -->
+      <div class="info-container">
+        <p><strong>Platform Name:</strong> <span id="platformName">Loading...</span></p>
+        <p><strong>OS Version:</strong> <span id="osVersion">Loading...</span></p>
+        <p><strong>Python Version:</strong> <span id="pythonVersion">Loading...</span></p>
+        <p><strong>Temperature (°C):</strong> <span id="temperature">Loading...</span></p>
+        <p><strong>CPU Usage (%):</strong> <span id="cpuUsage">Loading...</span></p>
+        <p>
+          <strong>Memory (MB):</strong>
+          <span id="memUsed">--</span> used /
+          <span id="memTotal">--</span> total,
+          <span id="memFree">--</span> free
+        </p>
+        <p>
+          <strong>Swap (MB):</strong>
+          <span id="swapUsed">--</span> used /
+          <span id="swapTotal">--</span> total
+        </p>
+        <p>
+          <strong>Disk (MB):</strong>
+          <span id="diskUsed">--</span> used /
+          <span id="diskTotal">--</span> total,
+          <span id="diskFree">--</span> free
+        </p>
+      </div>
+
+      <hr>
+      <!-- New section for Installed Python Packages -->
+      <h2>Installed Python Packages</h2>
+      <div id="packagesSection">
+        <p>Loading package info...</p>
+      </div>
+    </div>
+
+    <script>
+      /*******************************
+       *        SYSTEM INFO
+       *******************************/
+      function updateSystemInfo() {
+        fetch('/system_info')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Server error: ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Update each DOM element
+            document.getElementById('platformName').textContent   = data.platform_name || "N/A";
+            document.getElementById('osVersion').textContent      = data.os_version     || "N/A";
+            document.getElementById('pythonVersion').textContent  = data.python_version || "N/A";
+
+            const temp = data.temperature !== null ? data.temperature.toFixed(1) : "N/A";
+            document.getElementById('temperature').textContent = temp;
+
+            const cpu = data.cpu_usage !== null ? data.cpu_usage.toFixed(1) : "N/A";
+            document.getElementById('cpuUsage').textContent    = cpu;
+
+            // Memory
+            if (data.memory) {
+              document.getElementById('memTotal').textContent = data.memory.total_mb ?? "N/A";
+              document.getElementById('memUsed').textContent  = data.memory.used_mb  ?? "N/A";
+              document.getElementById('memFree').textContent  = data.memory.free_mb  ?? "N/A";
+            }
+
+            // Swap
+            if (data.swap) {
+              document.getElementById('swapTotal').textContent = data.swap.total_mb ?? "N/A";
+              document.getElementById('swapUsed').textContent  = data.swap.used_mb  ?? "N/A";
+            }
+
+            // Disk
+            if (data.disk) {
+              document.getElementById('diskTotal').textContent = data.disk.total_mb ?? "N/A";
+              document.getElementById('diskUsed').textContent  = data.disk.used_mb  ?? "N/A";
+              document.getElementById('diskFree').textContent  = data.disk.free_mb  ?? "N/A";
+            }
+          })
+          .catch(err => {
+            console.error("Failed to fetch system info:", err);
+          });
+      }
+
+
+      /*******************************
+       *       PYTHON PACKAGES
+       *******************************/
+      function updatePackages() {
+        fetch('/packages')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Server error: ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            // data is a JSON object of the form: { "Flask": "2.2.2", "psutil": "5.9.5", ... }
+            const packagesSection = document.getElementById('packagesSection');
+
+            // If there are no packages in data, handle gracefully
+            if (!data || Object.keys(data).length === 0) {
+              packagesSection.innerHTML = "<p>No packages found.</p>";
+              return;
+            }
+
+            // Build a list in HTML
+            let html = '<ul class="packages-list">';
+            for (const [pkgName, version] of Object.entries(data)) {
+              html += `<li><strong>${pkgName}</strong>: ${version}</li>`;
+            }
+            html += '</ul>';
+
+            packagesSection.innerHTML = html;
+          })
+          .catch(err => {
+            console.error("Failed to fetch packages:", err);
+            document.getElementById('packagesSection').innerHTML = "<p>Error loading packages.</p>";
+          });
+      }
+
+
+      /*******************************
+       *  INITIAL LOAD & INTERVALS
+       *******************************/
+      // Fetch system info immediately upon loading, then every 5 seconds
+      updateSystemInfo();
+      setInterval(updateSystemInfo, 5000);
+
+      // Fetch installed packages immediately upon loading, then (optionally) every 30 seconds
+      updatePackages();
+      // If you want to periodically refresh packages, uncomment this line:
+      // setInterval(updatePackages, 30000);
+    </script>
+  </body>
+</html>
+

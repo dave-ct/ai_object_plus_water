@@ -60,19 +60,20 @@
       .hidden {
         display: none;
       }
-      /* Flexible row to hold water pistol + manual movement side by side */
+      /* Flexible row to hold columns side by side */
       .flex-row {
         display: flex;
         flex-wrap: wrap;  /* allows wrapping on smaller screens */
         gap: 1em;         /* spacing between columns */
         align-items: flex-start; /* align columns at the top */
+        margin: 1em 0;
       }
       /* Each column in the flex row */
       .column {
         flex: 1;   /* each column can grow/shrink equally */
         min-width: 200px; /* ensures columns don't shrink too small */
       }
-      /* Center direction buttons within their column */
+      /* Direction buttons: reduce spacing between them */
       .direction-buttons {
         display: flex;
         flex-direction: column;
@@ -81,20 +82,36 @@
       .direction-buttons-row {
         display: flex;
         justify-content: center;
-        margin: 0.5em 0;
+        margin: 0.2em 0;  /* smaller vertical gap */
+      }
+      /* Additional style to reduce horizontal spacing between direction buttons */
+      .direction-buttons-row button {
+        margin: 0.2em;  /* smaller gap between buttons themselves */
+      }
+      .status-panel {
+        background: #fafafa;
+        border: 1px solid #ccc;
+        padding: 0.5em;
+      }
+      .status-panel p {
+        margin: 0.25em 0;
       }
     </style>
   </head>
 
   <body>
     <div class="container">
-      <h1>Live Camera Feed</h1>
+      <!-- Give the heading an ID so we can update its text dynamically -->
+      <h1 id="mainHeading">Live Camera Feed (Auto)</h1>
 
-      <!-- Mode Toggle Buttons (just under the heading) -->
+      <!-- Mode Toggle Buttons -->
       <div class="mode-buttons">
-        <button onclick="setMode('auto')">Auto Mode</button>
-        <button onclick="setMode('manual')">Manual Mode</button>
+        <!-- Give these buttons IDs so we can hide/show them in JavaScript -->
+        <button id="autoModeBtn" onclick="setMode('auto')">Auto Mode</button>
+        <button id="manualModeBtn" onclick="setMode('manual')">Manual Mode</button>
         <button onclick="location.href='/recordings'">View Recordings</button>
+        <!-- NEW BUTTON: System Info -->
+        <button onclick="location.href='/system'">System Info</button>
       </div>
 
       <hr>
@@ -106,15 +123,30 @@
 
       <hr>
 
-      <!-- Flex row for Water Pistol (left) and Manual Movement (right) -->
+      <!-- Water Pistol Controls + "Set Position" button in the same row -->
       <div class="flex-row">
-        <!-- Water Pistol (always visible) -->
         <div class="column" id="waterPistolControls">
           <button onclick="fetch('/water_pistol?action=start')">Start Water</button>
           <button class="danger" onclick="fetch('/water_pistol?action=stop')">Stop Water</button>
+          <!-- Hidden by default if not in manual mode -->
+          <button id="setPositionBtn" class="hidden" onclick="setPosition()">Set Position</button>
+        </div>
+      </div>
+
+      <!-- A row with two columns: LEFT (Status Panel), RIGHT (Manual Movement) -->
+      <div class="flex-row">
+        <!-- Column: Status Panel -->
+        <div class="column">
+          <div class="status-panel" id="statusPanel">
+            <p><strong>Pan Angle:</strong> <span id="panAngle">0</span></p>
+            <p><strong>Tilt Angle:</strong> <span id="tiltAngle">0</span></p>
+            <p><strong>Mode:</strong> <span id="modeDisplay">Auto</span></p>
+            <p><strong>Water Pistol:</strong> <span id="waterPistolStatus">Stopped</span></p>
+            <p><strong>Recording:</strong> <span id="recordingStatus">Not recording</span></p>
+          </div>
         </div>
 
-        <!-- Manual Movement (hidden by default) -->
+        <!-- Column: Manual Movement (hidden by default if not in manual mode) -->
         <div class="column hidden" id="manualControls">
           <div class="direction-buttons">
             <div class="direction-buttons-row">
@@ -128,13 +160,12 @@
               <button onclick="movePanTilt('down')">Down</button>
             </div>
           </div>
-          <button onclick="setHomePosition()">Set Current Position as Home</button>
         </div>
       </div>
     </div>
 
     <script>
-      let currentMode = 'auto';  // start in AUTO by default
+      let currentMode = 'auto';  // Start in AUTO by default
 
       function setMode(mode) {
         fetch(`/set_mode?mode=${mode}`)
@@ -143,7 +174,14 @@
               alert("Error setting mode: " + response.statusText);
             } else {
               currentMode = mode;
+              // Update the heading immediately
+              const heading = document.getElementById('mainHeading');
+              heading.textContent = mode === 'auto'
+                ? "Live Camera Feed (Auto)"
+                : "Live Camera Feed (Manual)";
+
               toggleManualControls(mode);
+              toggleModeButtons(mode);
             }
           })
           .catch(err => alert("Failed to set mode: " + err));
@@ -151,10 +189,31 @@
 
       function toggleManualControls(mode) {
         const manualDiv = document.getElementById('manualControls');
+        const setPosBtn = document.getElementById('setPositionBtn');
+
+        // Show/Hide the movement buttons + "Set Position" if in manual mode
         if (mode === 'manual') {
           manualDiv.classList.remove('hidden');
+          setPosBtn.classList.remove('hidden');
         } else {
           manualDiv.classList.add('hidden');
+          setPosBtn.classList.add('hidden');
+        }
+      }
+
+      // Show/hide the Auto Mode and Manual Mode buttons
+      function toggleModeButtons(mode) {
+        const autoBtn = document.getElementById('autoModeBtn');
+        const manualBtn = document.getElementById('manualModeBtn');
+
+        if (mode === 'auto') {
+          // Already in auto => hide "Auto Mode" button, show "Manual Mode"
+          autoBtn.classList.add('hidden');
+          manualBtn.classList.remove('hidden');
+        } else {
+          // In manual => hide "Manual Mode" button, show "Auto Mode"
+          autoBtn.classList.remove('hidden');
+          manualBtn.classList.add('hidden');
         }
       }
 
@@ -172,9 +231,9 @@
           .catch(err => alert("Failed to move pan/tilt: " + err));
       }
 
-      function setHomePosition() {
+      function setPosition() {
         if (currentMode !== 'manual') {
-          alert("Please switch to MANUAL mode to set home position.");
+          alert("Please switch to MANUAL mode to set position.");
           return;
         }
         fetch('/set_home')
@@ -182,12 +241,55 @@
             if (!response.ok) {
               alert("Error setting home: " + response.statusText);
             } else {
-              alert("Home position updated.");
+              alert("Current position set as home.");
             }
           })
-          .catch(err => alert("Failed to set home position: " + err));
+          .catch(err => alert("Failed to set position: " + err));
       }
+
+      // ---- AUTOMATIC STATUS UPDATING ----
+      function updateStatus() {
+        fetch('/status')
+          .then(response => response.json())
+          .then(data => {
+            // Update numeric angles (round or fix decimals if you like)
+            document.getElementById('panAngle').innerText = data.current_pan_angle.toFixed(2);
+            document.getElementById('tiltAngle').innerText = data.current_tilt_angle.toFixed(2);
+
+            // Convert auto_mode to 'Auto' or 'Manual'
+            const modeText = data.auto_mode ? 'Auto' : 'Manual';
+            document.getElementById('modeDisplay').innerText = modeText;
+
+            // Also show/hide relevant UI based on the actual mode from server
+            currentMode = data.auto_mode ? 'auto' : 'manual';
+            toggleManualControls(currentMode);
+            toggleModeButtons(currentMode);
+
+            // Update the heading
+            const heading = document.getElementById('mainHeading');
+            heading.textContent = data.auto_mode
+              ? "Live Camera Feed (Auto)"
+              : "Live Camera Feed (Manual)";
+
+            // Water pistol
+            document.getElementById('waterPistolStatus').innerText = data.water_pistol_active ? 'Firing' : 'Stopped';
+
+            // Recording
+            document.getElementById('recordingStatus').innerText = data.is_recording ? 'Recording' : 'Not recording';
+          })
+          .catch(err => console.error('Failed to fetch status:', err));
+      }
+
+      // Update the status panel immediately after page load...
+      updateStatus();
+      // ...and then every second
+      setInterval(updateStatus, 1000);
     </script>
   </body>
 </html>
+
+
+
+
+
 

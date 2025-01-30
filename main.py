@@ -25,6 +25,9 @@ import RPi.GPIO as GPIO
 import os
 import subprocess
 import math
+import psutil
+import platform
+import importlib.metadata
 
 # --------------------------------------------------------------------------------
 #  TUNING PARAMETERS (SET FROM my_confgiuration.py)
@@ -76,10 +79,65 @@ manual_home_pan = HOME_PAN
 manual_home_tilt = HOME_TILT
 
 # -----------------------------------------------------------------------------
+#  Auto detection of Platform
+# -----------------------------------------------------------------------------
+def detect_platform():
+    """
+    Reads /proc/device-tree/model and sets config.RASPBERRY_PI_ZERO_2W
+    to True if it's a Raspberry Pi Zero 2 W, otherwise False.
+    Logs the detected platform via logger.info.
+    """
+    model_str = "Unknown Platform"
+    model_path = "/proc/device-tree/model"
+
+    if os.path.exists(model_path):
+        with open(model_path, "r") as f:
+            model_str = f.read().strip()
+
+    logger.info(f"Detected Platform - {model_str}")
+
+    # Set config.RASPBERRY_PI_ZERO_2W based on substring match
+    config.RASPBERRY_PI_ZERO_2W = ("Raspberry Pi Zero 2 W" in model_str)
+
+detect_platform()
+if config.RASPBERRY_PI_ZERO_2W:
+    logger.info("This is a Raspberry Pi Zero 2 W, enabling Pi Zero optimizations...")
+else:
+    logger.info("Not a Pi Zero 2 W, using normal behavior.")
+
+
+# -----------------------------------------------------------------------------
 #  Web Server settings, Functions and Routes
 # -----------------------------------------------------------------------------
 app = Flask(__name__)
 latest_frame = None  # We'll store the latest camera frame in memory
+
+def get_cpu_temperature():
+    """Return CPU temperature in °C if available, otherwise None."""
+    temp_path = "/sys/class/thermal/thermal_zone0/temp"
+    if os.path.exists(temp_path):
+        try:
+            with open(temp_path, "r") as f:
+                millideg = f.read().strip()
+                return float(millideg) / 1000.0  # convert from millideg to °C
+        except Exception:
+            pass
+    return None
+
+def get_platform_name():
+    """
+    Return the platform name from /proc/device-tree/model if available,
+    else a fallback to platform.platform().
+    """
+    model_path = "/proc/device-tree/model"
+    if os.path.exists(model_path):
+        try:
+            with open(model_path, "r") as f:
+                return f.read().strip()
+        except Exception:
+            pass
+    # Fallback for non-Raspberry Pi or missing file
+    return platform.platform()
 
 def start_web_server():
     # Run Flask dev server on port 5000 (or any port you want)
@@ -107,6 +165,116 @@ def gen_frames():
         else:
             # If no frame yet, just sleep briefly
             time.sleep(0.05)
+
+@app.route("/system_info")
+def system_info():
+    # 1) Temperature
+    temperature = get_cpu_temperature()
+
+    # 2) CPU usage (percentage)
+    cpu_usage = psutil.cpu_percent(interval=0.1)
+
+    # 3) Memory info
+    mem = psutil.virtual_memory()
+    mem_total_mb = mem.total / (1024 * 1024)
+    mem_used_mb  = mem.used  / (1024 * 1024)
+    mem_free_mb  = mem.available / (1024 * 1024)
+
+    # 4) Swap info
+    swap = psutil.swap_memory()
+    swap_total_mb = swap.total / (1024 * 1024)
+    swap_used_mb  = swap.used  / (1024 * 1024)
+
+    # 5) Root filesystem disk usage
+    disk = psutil.disk_usage('/')
+    disk_total_mb = disk.total / (1024 * 1024)
+    disk_used_mb  = disk.used  / (1024 * 1024)
+    disk_free_mb  = disk.free  / (1024 * 1024)
+
+    # 6) Platform name (Pi model or fallback)
+    platform_name = get_platform_name()
+
+    # 7) OS version (e.g. "Linux-6.1.21-v7+-armv7l-with-glibc2.31")
+    os_version = platform.platform()
+
+    # 8) Python version (e.g. "3.9.2")
+    python_version = platform.python_version()
+
+    data = {
+        "temperature": temperature,      # float or None
+        "cpu_usage": cpu_usage,          # float
+        "memory": {
+            "total_mb": round(mem_total_mb, 2),
+            "used_mb":  round(mem_used_mb,  2),
+            "free_mb":  round(mem_free_mb,  2),
+        },
+        "swap": {
+            "total_mb": round(swap_total_mb, 2),
+            "used_mb":  round(swap_used_mb,  2),
+        },
+        "disk": {
+            "total_mb": round(disk_total_mb, 2),
+            "used_mb":  round(disk_used_mb,  2),
+            "free_mb":  round(disk_free_mb, 2),
+        },
+        "platform_name": platform_name,
+        "os_version": os_version,
+        "python_version": python_version,
+    }
+
+    return jsonify(data)
+
+
+@app.route("/packages")
+def list_packages():
+    """
+    Returns a JSON mapping of {package_name: version} for all installed packages
+    in the current Python environment, using importlib.metadata.
+    """
+    # Retrieve all distributions
+    distributions = importlib.metadata.distributions()
+
+    installed = {}
+    for dist in distributions:
+        # dist.metadata is an email.message.Message object
+        # dist.metadata["Name"] and dist.metadata["Version"] are standard fields
+        name = dist.metadata["Name"]
+        version = dist.metadata["Version"]
+        installed[name] = version
+
+    # Sort by package name (case-insensitive) for cleaner output
+    sorted_installed = dict(sorted(installed.items(), key=lambda x: x[0].lower()))
+
+    return jsonify(sorted_installed)
+
+@app.route("/system")
+def system_page():
+    """
+    Renders the 'system.html' template which shows CPU/Memory/Disk stats,
+    Raspberry Pi info, etc.
+    """
+    return render_template("system.html")
+
+@app.route("/status")
+def status():
+    """
+    Returns a JSON response containing the current status of the system:
+    - auto_mode: boolean (True for auto, False for manual)
+    - is_recording: boolean (current recording state)
+    - water_pistol_active: boolean (whether the water pistol is firing)
+    - current_pan_angle: float
+    - current_tilt_angle: float
+    """
+    current_pan, current_tilt = pan_tilt_control.get_current_angles()
+
+    data = {
+        "auto_mode": auto_mode,                          # True/False
+        "is_recording": recording_manager.recording,     # True/False
+        "water_pistol_active": water_pistol.active,      # True/False
+        "current_pan_angle": current_pan,                # numeric value
+        "current_tilt_angle": current_tilt,              # numeric value
+    }
+    return jsonify(data)
 
 
 @app.route("/recordings")
@@ -528,9 +696,11 @@ class RecordingManager:
             self.recording = False
 
             #Now convert the file
-            convert_saved_video(self.filename)
-            # USe the below instead if on Raspberry Pi Zero2w
-            # convert_saved_video_async(self.filename)
+            if config.RASPBERRY_PI_ZERO_2W == False:
+                convert_saved_video(self.filename)
+            else:
+                convert_saved_video_async(self.filename)
+
 
 
 class TargetTracker:
