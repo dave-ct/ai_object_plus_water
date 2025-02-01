@@ -329,6 +329,7 @@ if abs(offset_x) < DEAD_ZONE and abs(offset_y) < DEAD_ZONE:
     return  # No movement needed
    ```
 If the object is within these pixel thresholds, the system doesn’t move.
+
 4. **Convert offsets to angles:**
 ```python
 delta_pan  = offset_x * PAN_DEG_PER_PIXEL
@@ -432,9 +433,7 @@ Basically this is just for personal use for people who want to build their own d
 If you use the models derived from Yolov8 see the [license file](models/LICENSE)
 
 ***
-## Common Issues
-### Raspberry Pi Zero 2w - Stops detecting after first recording.
-This is due to issues with FFMPEG and the reosurces available on the raspberry pi zero2w, instead find the line in `main.py`
-that reads `convert_saved_video(self.filename)` and change it to the async version `convert_saved_video_async(self.filename)`
+## Common Issues / FAQs
+Note  - Add as needed
 
 
