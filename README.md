@@ -190,13 +190,21 @@ changing the `I2C_ADDRESS ` in the `my_configuration.py` file
 ## Get software and setup venv
 
 
-First clone the software from Github (This needs updating) 
+To use the latest __unstable__ version clone the software from Github 
 ```
 cd
 git clone https://github.com/dave-ct/ai_object_plus_water.git
 
 ```
-Create a new `venv` that inherits the site packages, activate it and make sure all packages are installed
+If you want to use the latest stable release (recommended).  Download the latest [release](https://github.com/dave-ct/ai_object_plus_water/releases/)
+and unzip the file in to your home directopry on your raspberry pi.
+
+
+
+
+Create a new `venv` that inherits the site packages, activate it and make sure all packages are installed. 
+If using the stable release zip file then make sure  you `cd` to the directory that was unzipped as the name will be
+different from the below `ai_object_plus_water` as should include the version number at the end
 ```
 cd ai_object_plus_water
 python3 -m venv --system-site-packages myenv
