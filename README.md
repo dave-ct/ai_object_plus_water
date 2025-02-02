@@ -20,6 +20,19 @@ Currently, it has only been tested on a Raspberry Pi 4b with an AI Camera, but I
 * Raspberry Pi 5 with any camera plus AI accelerator 
 * Raspberry Pi Zero 2w with AI camera (a compact version)
 ***
+# Contents
+[Main Part List](#main-part-list)  
+[Power Supply Parts](#power-supply)  
+[Connecting the Parts & Wiring](#connecting-the-parts-together)
+[Assembly Guide -TBC](#assembly-guide)  
+[Software Setup](#getting-it-running)  
+[Operating Modes](#modes-of-operation)  
+[How object Tracking Works](#how-tracking-an-object-works)  
+[AI Models](#ai-models-for-ai-camera)  
+[Useful Links](#useful-links)
+[Common Issues / FAQs](#common-issues--faqs)
+
+***
 # Main Part list
 ![Parts](docs/images/parts_list3.png)
 
@@ -58,13 +71,26 @@ need but can be sourced from any supplier :-)  Will add other links later
 ***
 # Connecting the parts together
 
-### Water Pistol and Relay (plus connections)
+### Water Pistol
 You will need to disiasbmle the water pistol and take out the pump mechanism
 shown below, the link to the part above is simple to take apart with a screw driver.
 Once you have that make sure you keep the connector for the tubing which you put in the
 water source.
 ![Water Pistol](docs/images/water_pistol3.png)
 
+### Other Water Pistols
+It can be a bit hit an miss when buying cheap water pistols that are made in China, in the below
+diagram are three types I have recevied.
+
+![Other Water Pistols](docs/images/water_pistols.png)
+The Large Version is from a different part ordered on ebay, it is alot heavier and may need
+more powerful servos to support buy it does fire further and is more powerful.  Here is 
+the link I used to buy this one - [ebay](https://www.ebay.co.uk/itm/356473680433). The two smaller versions
+both work and came from the same seller on amazon in the part list at the start, so it can be a bit hit and miss
+with what you get. It is best not take them apart futher as when re-assembling one I found it lost some of it power
+as the one way valves can be delicate.
+
+### Relay 
 The Relay I used is shown below, this is used to turn the water pistol mechanism on and off
 ![Relay](docs/images/relay.png)
 
