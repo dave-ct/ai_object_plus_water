@@ -1,0 +1,6 @@
+squirrels
+jays
+pigeons
+magpies
+cats
+herons
