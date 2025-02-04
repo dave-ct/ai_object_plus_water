@@ -29,8 +29,10 @@ Currently, it has only been tested on a Raspberry Pi 4b with an AI Camera, but I
 [Operating Modes](#modes-of-operation)  
 [How object Tracking Works](#how-tracking-an-object-works)  
 [AI Models](#ai-models-for-ai-camera)  
+[Yolov8n Quantized Evaluation](docs/model_comparison.md)  
 [Useful Links](#useful-links)
-[Common Issues / FAQs](#common-issues--faqs)
+[Common Issues / FAQs](#common-issues--faqs)  
+
 
 ***
 # Main Part list
@@ -432,6 +434,8 @@ It was trained with batch size of 32 and over 200 epochs.
 ```
 **Confusion Matrix**
 ![Confusion Matrix A2](docs/images/a2_confusion_matrix.png)
+
+To see an evaluation of the orignal Yolov8n vs the Qunatized version see [Yolov8n Quantized Evaluation](docs/model_comparison.md)  
 
 Note - In the future will create larger pigeon dataset and then my own squirrel one (the exsiting squirrel one already had 
 augmentation so repeated images whereas the ones I created where all unique images) as that was not best quailty data.
