@@ -55,20 +55,21 @@ You will need parts similar to these:
 You can use these or similair, the links give you an idea of what you might 
 need but can be sourced from any supplier :-)  Will add other links later
 
-| Description             | Links                                                                                |
-|-------------------------|--------------------------------------------------------------------------------------|
-| Raspberry Pi 4b         | [Pimornoi](https://shop.pimoroni.com/products/raspberry-pi-4?variant=29157087412307) |
-| Raspberry Pi 5b         | [Pimoroni](https://shop.pimoroni.com/products/raspberry-pi-5?variant=42119790428243) |
-| Raspberry Pi AI Camera  | [Pimoroni](https://shop.pimoroni.com/products/raspberry-pi-ai-camera)                |
-| PCA9685 Servo Contoller | [Amazon](https://www.amazon.co.uk/dp/B0BKZC1XWR)                                     |
-| None Lataching Relay    | [Adafruit](https://www.adafruit.com/product/4409)                                    |
-| Electric Water Pistol   | [Amazon](https://www.amazon.co.uk/dp/B0BWNDTKFJ)                                     |
-| Pantilt Mechanism       | [Ali Express](https://www.aliexpress.com/item/1406199345.html)                       |
-| 2 x Servos              | [Ali Express](https://www.aliexpress.com/item/1005007208312977.html)                 |
-| Power Supply            | [See Power Supply Section](#Power-Supply)                                            |
-| Cables                  | TBC                                                                                  |
-| Tubing for water pistol | [Amazon](https://www.amazon.co.uk/dp/B07PNQ5BXD)                                     |
-| Case fro Components     | Whatever fits, will add 3d printed one later                                         |
+| Description                             | Links                                                                                |
+|-----------------------------------------|--------------------------------------------------------------------------------------|
+| Raspberry Pi 4b                         | [Pimornoi](https://shop.pimoroni.com/products/raspberry-pi-4?variant=29157087412307) |
+| Raspberry Pi 5b                         | [Pimoroni](https://shop.pimoroni.com/products/raspberry-pi-5?variant=42119790428243) |
+| Raspberry Pi AI Camera                  | [Pimoroni](https://shop.pimoroni.com/products/raspberry-pi-ai-camera)                |
+| PCA9685 Servo Contoller                 | [Amazon](https://www.amazon.co.uk/dp/B0BKZC1XWR)                                     |
+| None Lataching Relay                    | [Adafruit](https://www.adafruit.com/product/4409)                                    |
+| Electric Water Pistol                   | [Amazon](https://www.amazon.co.uk/dp/B0BWNDTKFJ)                                     |
+| Pantilt Mechanism                       | [Ali Express](https://www.aliexpress.com/item/1406199345.html)                       |
+| Alternate Yahboom Pantilt Mechanism     | [Ali Express](https://www.aliexpress.com/item/1005007297989706.html)                 |
+| 2 x Servos                              | [Ali Express](https://www.aliexpress.com/item/1005007208312977.html)                 |
+| Power Supply                            | [See Power Supply Section](#Power-Supply)                                            |
+| Cables                                  | TBC                                                                                  |
+| Tubing for water pistol                 | [Amazon](https://www.amazon.co.uk/dp/B07PNQ5BXD)                                     |
+| Case fro Components                     | Whatever fits, will add 3d printed one later                                         |
 
 ***
 # Connecting the parts together
@@ -108,6 +109,9 @@ The servos are power and contolled by a PCA9685.
 
 You can use whatever pan/tilt mechanism that suits you needs, below is an example pan/tilt with servo connected.
 ![pan_tilit](docs/images/pan_tilt.png)
+
+A more stable one is available from yahboom (2DOF) and I have also added an [assmebly guide](docs/yahboom2dof_guide.md) for this.
+![yahboom Assembly](docs/images/assembly/step12.jpg)
 
 The PCA9685, shown below is used to control the servos.  Due to the stall current
 of the servos you need to supply a power source for these direct to the PCA9685.
