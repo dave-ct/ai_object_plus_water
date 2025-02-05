@@ -20,7 +20,8 @@ from picamera2.devices import IMX500
 from picamera2.devices.imx500 import (NetworkIntrinsics,
                                       postprocess_nanodet_detection)
 from libcamera import Transform
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+from gpiozero import LED #Use this so works across all pi types, issue with RPi.GPIO on raspberry pi 5
 
 import os
 import subprocess
@@ -605,41 +606,41 @@ class PanTiltControllerWrapper:
 
 class WaterPistolController:
     """
-    Controls a water pistol by toggling a relay module using GPIO pins.
+    Controls a water pistol by toggling a relay module using GPIO pins (via GPIO Zero).
 
     This class provides methods to start and stop the water pistol by activating and
-    deactivating the relay pin. It also ensures proper GPIO configuration as well as
-    cleanup.
-
+    deactivating the relay pin. It also ensures cleanup when finished.
     """
     def __init__(self, pin=config.REPLAY_PIN):
         self.active = False
         self.relay_pin = pin
 
-        # Set up GPIO
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.relay_pin, GPIO.OUT)
+        # Set up GPIO Zero. If your relay is active-low, use active_high=False.
+        self.relay = LED(self.relay_pin, active_high=True)
 
         # Ensure relay starts in OFF state
-        GPIO.output(self.relay_pin, GPIO.LOW)
+        self.relay.off()
 
     def start(self):
         if not self.active:
             self.active = True
             # Turn relay ON
-            GPIO.output(self.relay_pin, GPIO.HIGH)
+            self.relay.on()
             logger.info("WaterPistol - Started firing!!.")
 
     def stop(self):
         if self.active:
             self.active = False
             # Turn relay OFF
-            GPIO.output(self.relay_pin, GPIO.LOW)
+            self.relay.off()
             logger.info("WaterPistol - Stopped firing.")
 
     def cleanup(self):
-        """Clean up GPIO settings - should be called when program exits"""
-        GPIO.cleanup()
+        """
+        Clean up resources - should be called when program exits.
+        GPIO Zero will clean up automatically, but explicitly closing is good practice.
+        """
+        self.relay.close()
 
 def convert_saved_video_async(filename):
     """
