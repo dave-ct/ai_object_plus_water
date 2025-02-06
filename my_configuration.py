@@ -102,7 +102,7 @@ PRESERVE_ASPECT_RATIO = False
 # Whether to preserve the aspect ratio when scaling image input to the model.
 # If True, will draw an ROI box on the preview indicating the cropped region.
 
-ACTIVATION_DETECTIONS = 5
+ACTIVATION_DETECTIONS = 25
 # Number of detections within a given time window required to declare "target acquired."
 
 ACTIVATION_TIME_WINDOW = 1.0

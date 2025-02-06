@@ -8,16 +8,14 @@
     <title>Camera Feed</title>
 
     <style>
-      /* Basic reset and body styling */
       body {
         margin: 0;
         padding: 0;
         font-family: Arial, sans-serif;
         background: #f2f2f2;
       }
-      /* Container for everything */
       .container {
-        max-width: 900px; /* adjust as you like */
+        max-width: 900px;
         margin: 0 auto;
         padding: 1em;
         background: #fff;
@@ -26,13 +24,11 @@
       h1 {
         margin-top: 0;
       }
-      /* We reduce top/bottom margins on sections to keep everything closer. */
       .mode-buttons {
         margin: 0.5em 0;
       }
-      /* Make the image responsive */
       .video-container img {
-        max-width: 100%;  /* Scale down for smaller devices */
+        max-width: 100%;
         height: auto;
         border: 1px solid #ccc;
       }
@@ -52,28 +48,23 @@
       button:hover {
         background: #0056b3;
       }
-      /* For a "stop" or danger action, you could color them differently */
       .danger {
         background: #dc3545;
       }
-      /* Hidden utility class */
       .hidden {
         display: none;
       }
-      /* Flexible row to hold columns side by side */
       .flex-row {
         display: flex;
-        flex-wrap: wrap;  /* allows wrapping on smaller screens */
-        gap: 1em;         /* spacing between columns */
-        align-items: flex-start; /* align columns at the top */
+        flex-wrap: wrap;
+        gap: 1em;
+        align-items: flex-start;
         margin: 1em 0;
       }
-      /* Each column in the flex row */
       .column {
-        flex: 1;   /* each column can grow/shrink equally */
-        min-width: 200px; /* ensures columns don't shrink too small */
+        flex: 1;
+        min-width: 200px;
       }
-      /* Direction buttons: reduce spacing between them */
       .direction-buttons {
         display: flex;
         flex-direction: column;
@@ -82,11 +73,10 @@
       .direction-buttons-row {
         display: flex;
         justify-content: center;
-        margin: 0.2em 0;  /* smaller vertical gap */
+        margin: 0.2em 0;
       }
-      /* Additional style to reduce horizontal spacing between direction buttons */
       .direction-buttons-row button {
-        margin: 0.2em;  /* smaller gap between buttons themselves */
+        margin: 0.2em;
       }
       .status-panel {
         background: #fafafa;
@@ -101,41 +91,38 @@
 
   <body>
     <div class="container">
-      <!-- Give the heading an ID so we can update its text dynamically -->
       <h1 id="mainHeading">Live Camera Feed (Auto)</h1>
 
-      <!-- Mode Toggle Buttons -->
       <div class="mode-buttons">
-        <!-- Give these buttons IDs so we can hide/show them in JavaScript -->
         <button id="autoModeBtn" onclick="setMode('auto')">Auto Mode</button>
         <button id="manualModeBtn" onclick="setMode('manual')">Manual Mode</button>
         <button onclick="location.href='/recordings'">View Recordings</button>
-        <!-- NEW BUTTON: System Info -->
         <button onclick="location.href='/system'">System Info</button>
       </div>
 
       <hr>
 
-      <!-- Camera Feed -->
       <div class="video-container">
         <img src="/video_feed" alt="Camera Stream">
       </div>
 
       <hr>
 
-      <!-- Water Pistol Controls + "Set Position" button in the same row -->
       <div class="flex-row">
         <div class="column" id="waterPistolControls">
           <button onclick="fetch('/water_pistol?action=start')">Start Water</button>
           <button class="danger" onclick="fetch('/water_pistol?action=stop')">Stop Water</button>
-          <!-- Hidden by default if not in manual mode -->
-          <button id="setPositionBtn" class="hidden" onclick="setPosition()">Set Position</button>
+
+          <!-- ADDED / SHIFTED: The "Set Position" AND the new Recording button in the same row -->
+          <div>
+            <button id="setPositionBtn" class="hidden" onclick="setPosition()">Set Position</button>
+            <!-- NEW: Manual recording button, also hidden when in auto mode. -->
+            <button id="manualRecordingBtn" class="hidden" onclick="toggleManualRecording()">Start Recording</button>
+          </div>
         </div>
       </div>
 
-      <!-- A row with two columns: LEFT (Status Panel), RIGHT (Manual Movement) -->
       <div class="flex-row">
-        <!-- Column: Status Panel -->
         <div class="column">
           <div class="status-panel" id="statusPanel">
             <p><strong>Pan Angle:</strong> <span id="panAngle">0</span></p>
@@ -146,7 +133,6 @@
           </div>
         </div>
 
-        <!-- Column: Manual Movement (hidden by default if not in manual mode) -->
         <div class="column hidden" id="manualControls">
           <div class="direction-buttons">
             <div class="direction-buttons-row">
@@ -165,7 +151,7 @@
     </div>
 
     <script>
-      let currentMode = 'auto';  // Start in AUTO by default
+      let currentMode = 'auto';
 
       function setMode(mode) {
         fetch(`/set_mode?mode=${mode}`)
@@ -174,12 +160,10 @@
               alert("Error setting mode: " + response.statusText);
             } else {
               currentMode = mode;
-              // Update the heading immediately
               const heading = document.getElementById('mainHeading');
-              heading.textContent = mode === 'auto'
+              heading.textContent = (mode === 'auto')
                 ? "Live Camera Feed (Auto)"
                 : "Live Camera Feed (Manual)";
-
               toggleManualControls(mode);
               toggleModeButtons(mode);
             }
@@ -190,28 +174,27 @@
       function toggleManualControls(mode) {
         const manualDiv = document.getElementById('manualControls');
         const setPosBtn = document.getElementById('setPositionBtn');
+        const manualRecBtn = document.getElementById('manualRecordingBtn'); // NEW
 
-        // Show/Hide the movement buttons + "Set Position" if in manual mode
+        // Show/Hide movement + "Set Position" + "Manual Recording" if manual
         if (mode === 'manual') {
           manualDiv.classList.remove('hidden');
           setPosBtn.classList.remove('hidden');
+          manualRecBtn.classList.remove('hidden'); // show
         } else {
           manualDiv.classList.add('hidden');
           setPosBtn.classList.add('hidden');
+          manualRecBtn.classList.add('hidden');    // hide
         }
       }
 
-      // Show/hide the Auto Mode and Manual Mode buttons
       function toggleModeButtons(mode) {
         const autoBtn = document.getElementById('autoModeBtn');
         const manualBtn = document.getElementById('manualModeBtn');
-
         if (mode === 'auto') {
-          // Already in auto => hide "Auto Mode" button, show "Manual Mode"
           autoBtn.classList.add('hidden');
           manualBtn.classList.remove('hidden');
         } else {
-          // In manual => hide "Manual Mode" button, show "Auto Mode"
           autoBtn.classList.remove('hidden');
           manualBtn.classList.add('hidden');
         }
@@ -247,42 +230,67 @@
           .catch(err => alert("Failed to set position: " + err));
       }
 
-      // ---- AUTOMATIC STATUS UPDATING ----
+      // NEW: Manual Recording start/stop
+      function toggleManualRecording() {
+        // We read the current text on the button to see if we need to start or stop.
+        const btn = document.getElementById('manualRecordingBtn');
+        const action = (btn.textContent.includes("Stop")) ? "stop" : "start";
+
+        fetch(`/manual_recording?action=${action}`)
+          .then(response => {
+            if (!response.ok) {
+              alert("Error controlling recording: " + response.statusText);
+            }
+            // We'll rely on updateStatus to refresh the button text
+          })
+          .catch(err => alert("Failed to control recording: " + err));
+      }
+
       function updateStatus() {
         fetch('/status')
           .then(response => response.json())
           .then(data => {
-            // Update numeric angles (round or fix decimals if you like)
             document.getElementById('panAngle').innerText = data.current_pan_angle.toFixed(2);
             document.getElementById('tiltAngle').innerText = data.current_tilt_angle.toFixed(2);
 
-            // Convert auto_mode to 'Auto' or 'Manual'
             const modeText = data.auto_mode ? 'Auto' : 'Manual';
             document.getElementById('modeDisplay').innerText = modeText;
 
-            // Also show/hide relevant UI based on the actual mode from server
+            // Sync currentMode with server
             currentMode = data.auto_mode ? 'auto' : 'manual';
             toggleManualControls(currentMode);
             toggleModeButtons(currentMode);
 
-            // Update the heading
+            // Update heading
             const heading = document.getElementById('mainHeading');
             heading.textContent = data.auto_mode
               ? "Live Camera Feed (Auto)"
               : "Live Camera Feed (Manual)";
 
-            // Water pistol
-            document.getElementById('waterPistolStatus').innerText = data.water_pistol_active ? 'Firing' : 'Stopped';
+            document.getElementById('waterPistolStatus').innerText =
+              data.water_pistol_active ? 'Firing' : 'Stopped';
 
             // Recording
-            document.getElementById('recordingStatus').innerText = data.is_recording ? 'Recording' : 'Not recording';
+            const recordingText = data.is_recording ? 'Recording' : 'Not recording';
+            document.getElementById('recordingStatus').innerText = recordingText;
+
+            // --- ADDED: Update the manual recording button label ---
+            const manualRecBtn = document.getElementById('manualRecordingBtn');
+            if (!data.auto_mode) {
+              // In manual mode => show the button with correct label
+              manualRecBtn.classList.remove('hidden');
+              manualRecBtn.textContent = data.is_recording
+                ? "Stop Recording"
+                : "Start Recording";
+            } else {
+              // Hide it if auto mode
+              manualRecBtn.classList.add('hidden');
+            }
           })
           .catch(err => console.error('Failed to fetch status:', err));
       }
 
-      // Update the status panel immediately after page load...
       updateStatus();
-      // ...and then every second
       setInterval(updateStatus, 1000);
     </script>
   </body>
