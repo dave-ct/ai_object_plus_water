@@ -1,3 +1,5 @@
+# my_configuration.py
+
 # Setup all the configurable aspects in this file
 
 RASPBERRY_PI_ZERO_2W = False # This will be auto updated by code now as will detect the platform.
