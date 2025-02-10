@@ -391,17 +391,20 @@ quantized and exported using YOLO in the `imx` format.  After which it is then c
 Models are available in this repository are in the below table, just update the `my_configuration.py` with the details for the mode 
 you want to use, that is update `MODEL =` and `LABEL = `
 
-| Model Name                           | Animals Trained On                               | Model File to Use                                         | Label File to Use                                        |
-|--------------------------------------|--------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
-| train_all_yolov8n_150_32             | Squirrels, Cats, Piegons, Magpies & Jays         | `models/train_all_yolov8n_150_32/network.rpk`             | `models/train_all_yolov8n_150_32/labels.txt`             |
-| train_cats_yolov8n_150_32            | Cats                                             | `models/train_cats_yolov8n_150_32/network.rpk`            | `models/train_cats_yolov8n_150_32/labels.txt`            |
-| train_jays_yolov8n_150_32            | Jays                                             | `models/train_jays_yolov8n_150_32/network.rpk`            | `models/train_jays_yolov8n_150_32/labels.txt`            |
-| train_magpies_yolov8n_150_32         | Magpies                                          | `models/train_magpies_yolov8n_150_32/network.rpk`         | `models/train_magpies_yolov8n_150_32/labels.txt`         |
-| train_pigeons_yolov8n_150_32         | Piegons                                          | `models/train_pigeons_yolov8n_150_32/network.rpk`         | `mmodels/train_pigeons_yolov8n_150_32/labels.txt`        |
-| train_squirrels_yolov8n_150_32       | Squirrels                                        | `models/train_squirrels_yolov8n_150_32/network.rpk`       | `models/train_squirrels_yolov8n_150_32/labels.txt`       |
-| big_data_a2_200e_32b                 | Squirrels, Piegons, Magpies & Jays               | `models/big_data_a2_200e_32b/network.rpk`                 | `models/big_data_a2_200e_32b/labels.txt`                 |
-| train_herons_yolov8n_150_32          | Herons                                           | `models/train_herons_yolov8n_150_32/network.rpk`          | `models/train_herons_yolov8n_150_32/labels.txt`          |
-| train_all_with_herons_yolov8n_150_32 | Squirrels, Cats, Piegons, Magpies, Jays & Herons | `models/train_all_with_herons_yolov8n_150_32/network.rpk` | `models/train_all_with_herons_yolov8n_150_32/labels.txt` |
+| Model Name                           | Animals Trained On                                      | Model File to Use                                         | Label File to Use                                             |
+|--------------------------------------|---------------------------------------------------------|-----------------------------------------------------------|---------------------------------------------------------------|
+| train_all_yolov8n_150_32             | Squirrels, Cats, Piegons, Magpies & Jays                | `models/train_all_yolov8n_150_32/network.rpk`             | `models/train_all_yolov8n_150_32/labels.txt`                  |
+| train_cats_yolov8n_150_32            | Cats                                                    | `models/train_cats_yolov8n_150_32/network.rpk`            | `models/train_cats_yolov8n_150_32/labels.txt`                 |
+| train_jays_yolov8n_150_32            | Jays                                                    | `models/train_jays_yolov8n_150_32/network.rpk`            | `models/train_jays_yolov8n_150_32/labels.txt`                 |
+| train_magpies_yolov8n_150_32         | Magpies                                                 | `models/train_magpies_yolov8n_150_32/network.rpk`         | `models/train_magpies_yolov8n_150_32/labels.txt`              |
+| train_pigeons_yolov8n_150_32         | Piegons                                                 | `models/train_pigeons_yolov8n_150_32/network.rpk`         | `mmodels/train_pigeons_yolov8n_150_32/labels.txt`             |
+| train_squirrels_yolov8n_150_32       | Squirrels                                               | `models/train_squirrels_yolov8n_150_32/network.rpk`       | `models/train_squirrels_yolov8n_150_32/labels.txt`            |
+| big_data_a2_200e_32b                 | Squirrels, Piegons, Magpies & Jays                      | `models/big_data_a2_200e_32b/network.rpk`                 | `models/big_data_a2_200e_32b/labels.txt`                      |
+| train_herons_yolov8n_150_32          | Herons                                                  | `models/train_herons_yolov8n_150_32/network.rpk`          | `models/train_herons_yolov8n_150_32/labels.txt`               |
+| train_all_with_herons_yolov8n_150_32 | Squirrels, Cats, Piegons, Magpies, Jays & Herons        | `models/train_all_with_herons_yolov8n_150_32/network.rpk` | `models/train_all_with_herons_yolov8n_150_32/labels.txt`      |
+| train_foxes_yolov8n_175_32           | Foxes                                                   | `models/train_foxes_yolov8n_175_32/network.rpk`           | `models/train_foxes_yolov8n_175_32/labels.txt`                |
+|train_all_with_herons_foxes_yolov8n_175_32| Squirrels, Cats, Piegons, Magpies, Jays, Herons & Foxes |`models/train_all_with_herons_foxes_yolov8n_175_32/network.rpk`| `models/train_all_with_herons_foxes_yolov8n_175_32/labels.txt`|
+
 
 
 
