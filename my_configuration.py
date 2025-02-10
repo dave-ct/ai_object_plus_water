@@ -65,10 +65,10 @@ DELETE_CONVERTED_FILES = True #If True Delete the .h264 version once converted t
 
 
 
-MODEL = "models/train_all_yolov8n_150_32/network.rpk"
+MODEL = "models/train_all_with_herons_foxes_yolov8n_175_32/network.rpk"
 # Path to the AI inference model (an .rpk file) used by the IMX500 for object detection.
 
-LABELS = "models/train_all_yolov8n_150_32/labels.txt"
+LABELS = "models/train_all_with_herons_foxes_yolov8n_175_32/labels.txt"
 # Path to the file containing the label names (one label per line).
 
 FPS = 25
@@ -104,7 +104,7 @@ PRESERVE_ASPECT_RATIO = False
 # Whether to preserve the aspect ratio when scaling image input to the model.
 # If True, will draw an ROI box on the preview indicating the cropped region.
 
-ACTIVATION_DETECTIONS = 25
+ACTIVATION_DETECTIONS = 10
 # Number of detections within a given time window required to declare "target acquired."
 
 ACTIVATION_TIME_WINDOW = 1.0

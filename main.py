@@ -874,16 +874,17 @@ def do_frame_callback(request):
     target_tracker.update_detections(has_detections)
     is_acquired = target_tracker.is_target_acquired()
 
-    if is_acquired and not was_acquired:
+    if is_acquired and not was_acquired and auto_mode:
         recording_requested = True
         water_pistol.start()
-    elif was_acquired and not is_acquired:
+    elif was_acquired and not is_acquired and auto_mode:
         recording_stop_requested = True
         water_pistol.stop()
-        pan_tilt.move_home_async()
+        if auto_mode:
+            pan_tilt.move_home_async()
 
     # 4) Pan/tilt: maybe track the first smoothed box if you want
-    if is_acquired and smoothed_dets:
+    if is_acquired and smoothed_dets and auto_mode:
         first_box = smoothed_dets[0]["box"]  # (x, y, w, h)
         (x, y, w, h) = first_box
         main_w, main_h = picam2.stream_configuration("main")["size"]
