@@ -408,7 +408,8 @@ you want to use, that is update `MODEL =` and `LABEL = `
 | train_foxes_yolov8n_175_32           | Foxes                                                   | `models/train_foxes_yolov8n_175_32/network.rpk`           | `models/train_foxes_yolov8n_175_32/labels.txt`                |
 |train_all_with_herons_foxes_yolov8n_175_32| Squirrels, Cats, Piegons, Magpies, Jays, Herons & Foxes |`models/train_all_with_herons_foxes_yolov8n_175_32/network.rpk`| `models/train_all_with_herons_foxes_yolov8n_175_32/labels.txt`|
 
-
+Sample video recording from Raspberry Pi Ai Camera on youtube testing `train_all_with_herons_foxes_yolov8n_175_32` and that it does not pick up common 
+birds like Blue Tits but works on all other classes ok. [Video Link](https://youtu.be/eiFGALJ6wLY)
 
 
 
