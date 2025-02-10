@@ -29,8 +29,8 @@ TILT_SERVO_CHANNEL = 1
 REPLAY_PIN = 14
 
 # How many degrees to move per pixel offset when tracking an object
-PAN_DEG_PER_PIXEL = 0.005
-TILT_DEG_PER_PIXEL = 0.005
+PAN_DEG_PER_PIXEL = 0.0045
+TILT_DEG_PER_PIXEL = 0.00457
 
 # Reverse directions if needed (if you go up instead of down and left instead of right)
 PAN_INVERT = True  # If True, pan movement is inverted

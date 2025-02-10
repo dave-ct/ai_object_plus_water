@@ -87,6 +87,10 @@ FADE_FRAMES          = config.FADE_FRAMES
 #Variable for smoothed boxes
 smoothed_boxes = {}  # { category_id: { "box": (x, y, w, h), "no_update_count": 0 } }
 
+# Todo Move to configuration
+last_move_time = 0  # Time when the last movement command was issued
+MOVE_INTERVAL = 0.01  # Minimum time between move commands (in seconds)
+
 
 
 def blend_boxes(old_box, new_box, alpha):
@@ -730,6 +734,7 @@ class Detection:
         self.conf = conf
         # Convert from IMX500's inference coords to pixel coords
         self.box = imx500.convert_inference_coords(coords, metadata, picam2)
+        logger.debug(f"[Detection] Raw coords: {coords} converted to pixel box: {self.box}")
 
 def parse_detections(metadata: dict, imx500, intrinsics, picam2):
     threshold      = config.THRESHOLD
@@ -977,6 +982,17 @@ def do_frame_callback(request):
         offset_x = (x + w/2) - (main_w / 2)
         offset_y = (y + h/2) - (main_h / 2)
         pan_tilt.set_target_by_pixels(offset_x, offset_y)
+
+        # Check if enough time has passed since the last move
+        global last_move_time
+        if time.time() - last_move_time >= MOVE_INTERVAL:
+            last_move_time = time.time()
+            pan_tilt.set_target_by_pixels(offset_x, offset_y)
+            logger.debug("Movement command issued.")
+        else:
+            logger.debug("Movement command skipped due to debounce interval.")
+        # Then command the pan/tilt control
+        # pan_tilt.set_target_by_pixels(offset_x, offset_y)
 
     # 5) Draw bounding boxes on main (1:1) and lores (scaled)
     inside_box = False

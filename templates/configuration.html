@@ -110,7 +110,7 @@
           <input type="{% if item.type == 'int' %}number{% elif item.type == 'float' %}number{% else %}text{% endif %}"
                  name="{{ item.name }}"
                  value="{{ item.value }}"
-                 {% if item.type == 'float' %}step="0.1"{% endif %}>
+                 {% if item.type == 'float' %}step="any"{% endif %}>
           {% endif %}
         </div>
         {% endfor %}
