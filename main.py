@@ -31,34 +31,35 @@ import json
 
 
 def load_configuration():
-    """
-    Loads configuration from my_configuration.py and optionally overrides
-    with values from config.json if it exists
-    """
-    import my_configuration as config
-    print("Loading all configuration settings from from my_configuration.py and config.json.")
+   """
+   Loads configuration from my_configuration.py and optionally overrides
+   with values from config.json if it exists
+   """
+   import my_configuration as config
+   print("Loading all configuration settings from my_configuration.py and config.json.")
 
-    # If JSON exists, override values
-    json_path = "config.json"
-    if os.path.exists(json_path):
-        try:
-            with open(json_path, 'r') as f:
-                json_config = json.load(f)
+   json_path = "config.json"
+   if os.path.exists(json_path):
+       try:
+           with open(json_path, 'r') as f:
+               json_config = json.load(f)
 
-            # Override config module attributes with JSON values
-            for key, value in json_config.items():
-                if hasattr(config, key):
-                    setattr(config, key, value)
-                    print(f"Overriding {key} from JSON config with value: {value}")
-                else:
-                    print(f"Unknown configuration key in JSON: {key}")
+           for key, value in json_config.items():
+               if hasattr(config, key):
+                   original_value = getattr(config, key)
+                   if isinstance(original_value, tuple):
+                       value = tuple(value)  # Convert JSON array back to tuple
+                   setattr(config, key, value)
+                   print(f"Overriding {key} from JSON config with value: {value}")
+               else:
+                   print(f"Unknown configuration key in JSON: {key}")
 
-        except Exception as e:
-            print(f"Error loading JSON configuration: {e}")
-    else:
-        print("No JSON configuration file found, using default values from my_configuration.py")
+       except Exception as e:
+           print(f"Error loading JSON configuration: {e}")
+   else:
+       print("No JSON configuration file found, using default values from my_configuration.py")
 
-    return config
+   return config
 
 
 # Load configuration
@@ -282,7 +283,6 @@ def configuration():
         for key, value in request.form.items():
             # Convert string values to appropriate types
             try:
-                # Try to get the type from current config
                 current_value = getattr(config, key)
                 if isinstance(current_value, bool):
                     value = value.lower() == 'true'
@@ -290,6 +290,9 @@ def configuration():
                     value = int(value)
                 elif isinstance(current_value, float):
                     value = float(value)
+                elif isinstance(current_value, tuple):
+                    # Convert string "(1920, 1080)" to tuple
+                    value = tuple(map(int, value.strip('()').split(',')))
                 config_updates[key] = value
             except (ValueError, AttributeError):
                 logger.warning(f"Skipping invalid configuration value for {key}")
@@ -309,13 +312,14 @@ def configuration():
     # GET request - show current configuration
     config_items = []
     for key in dir(config):
-        if not key.startswith('__'):  # Skip internal Python attributes
+        if not key.startswith('__'):
             value = getattr(config, key)
-            if isinstance(value, (str, int, float, bool)):  # Only include basic types
+            # Add tuple to accepted types and handle conversion
+            if isinstance(value, (str, int, float, bool, tuple)):
                 config_items.append({
                     'name': key,
-                    'value': value,
-                    'type': type(value).__name__
+                    'value': str(value) if isinstance(value, tuple) else value,
+                    'type': 'tuple' if isinstance(value, tuple) else type(value).__name__
                 })
 
     return render_template('configuration.html', config_items=config_items)
