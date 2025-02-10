@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------------
 #  Import Required Packages
 # --------------------------------------------------------------------------------
-import my_configuration as config
+# import my_configuration as config
 from flask import Flask, render_template, Response, request, send_from_directory, jsonify
 import logging
 import sys
@@ -27,6 +27,43 @@ import math
 import psutil
 import platform
 import importlib.metadata
+import json
+
+
+def load_configuration():
+    """
+    Loads configuration from my_configuration.py and optionally overrides
+    with values from config.json if it exists
+    """
+    import my_configuration as config
+    print("Loading all configuration settings from from my_configuration.py and config.json.")
+
+    # If JSON exists, override values
+    json_path = "config.json"
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, 'r') as f:
+                json_config = json.load(f)
+
+            # Override config module attributes with JSON values
+            for key, value in json_config.items():
+                if hasattr(config, key):
+                    setattr(config, key, value)
+                    print(f"Overriding {key} from JSON config with value: {value}")
+                else:
+                    print(f"Unknown configuration key in JSON: {key}")
+
+        except Exception as e:
+            print(f"Error loading JSON configuration: {e}")
+    else:
+        print("No JSON configuration file found, using default values from my_configuration.py")
+
+    return config
+
+
+# Load configuration
+config = load_configuration()
+
 
 # --------------------------------------------------------------------------------
 #  TUNING PARAMETERS (FROM my_configuration.py)
@@ -238,6 +275,53 @@ def gen_frames():
 # -----------------------------------------------------------------------------
 #  Flask Routes
 # -----------------------------------------------------------------------------
+
+@app.route("/configuration", methods=['GET', 'POST'])
+def configuration():
+    if request.method == 'POST':
+        # Handle form submission
+        config_updates = {}
+        for key, value in request.form.items():
+            # Convert string values to appropriate types
+            try:
+                # Try to get the type from current config
+                current_value = getattr(config, key)
+                if isinstance(current_value, bool):
+                    value = value.lower() == 'true'
+                elif isinstance(current_value, int):
+                    value = int(value)
+                elif isinstance(current_value, float):
+                    value = float(value)
+                config_updates[key] = value
+            except (ValueError, AttributeError):
+                logger.warning(f"Skipping invalid configuration value for {key}")
+                continue
+
+        # Save to config.json
+        try:
+            with open('config.json', 'w') as f:
+                json.dump(config_updates, f, indent=4)
+            logger.info("Configuration saved. Restart required for changes to take effect.")
+            return jsonify(
+                {"status": "success", "message": "Configuration saved. Restart required for changes to take effect."})
+        except Exception as e:
+            logger.error(f"Error saving configuration: {e}")
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+    # GET request - show current configuration
+    config_items = []
+    for key in dir(config):
+        if not key.startswith('__'):  # Skip internal Python attributes
+            value = getattr(config, key)
+            if isinstance(value, (str, int, float, bool)):  # Only include basic types
+                config_items.append({
+                    'name': key,
+                    'value': value,
+                    'type': type(value).__name__
+                })
+
+    return render_template('configuration.html', config_items=config_items)
+
 
 @app.route("/manual_recording")
 def manual_recording():

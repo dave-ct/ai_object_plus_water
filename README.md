@@ -257,8 +257,10 @@ The scripts are:
 
 
 ## Software Configuration
-The configurable parameters are set in the file `my_configuration.py`.  This will be moved to a JSON file in the future 
-but to for now use this.  Before you run the `main.py` edit this file to suit your needs.  There are comments in the file to explain it.
+The default configurable parameters are set in the file `my_configuration.py`.    There are comments in the file to explain what each setting does.
+Once running you can make changes through the web interface configuration menu (top right cog icon `⚙`) which will create 
+or update the file called `config.json` in the running directory.  Any change made will need the application to be restrated to take 
+effect at this time,
 
 
 ## Running the program
