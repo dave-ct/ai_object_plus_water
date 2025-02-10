@@ -80,15 +80,13 @@ MOVE_STEP_DELAY      = config.MOVE_STEP_DELAY
 SHOW_PREVIEW         = config.SHOW_PREVIEW
 SAVE_DIRECTORY       = config.SAVE_DIRECTORY_NAME
 DELETE_CONVERTED_FILES = config.DELETE_CONVERTED_FILES
+ALPHA                = config.ALPHA
+FADE_FRAMES          = config.FADE_FRAMES
 
-
-#ToDo Move this to config once working
-#For each category, store smoothed bounding box + a "no update" counter
+#Variable for smoothed boxes
 smoothed_boxes = {}  # { category_id: { "box": (x, y, w, h), "no_update_count": 0 } }
-# Tweak these:
-ALPHA = 0.5        # blending factor: 0.3..0.7 typical
-FADE_FRAMES = 3    # how many consecutive frames with no detection
-                   # before we remove the box
+
+
 
 def blend_boxes(old_box, new_box, alpha):
     """

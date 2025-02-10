@@ -39,6 +39,10 @@ TILT_INVERT = True  # If True, tilt movement is inverted
 # Zone around center in which we do NOT move (pixels) when tracking, so if the we are within dead_zone (in the centre of the image) we wont move any further
 DEAD_ZONE = 40
 
+#Smoothing
+ALPHA = 0.5        # blending factor: 0.3..0.7 typical
+FADE_FRAMES = 3    # how many consecutive frames with no detection before we remove the box
+
 # Set the default PanTilt home angles when it starts up
 HOME_PAN  = 0.0
 HOME_TILT = 20.0
