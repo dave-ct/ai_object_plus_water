@@ -2,12 +2,14 @@
 
 **This is work in progress, documentation and guide will get better!!**
 
-This project is the follow up to a recent prototype (image below) for a device to deter squirrels, Jays, Magpies and Pigeons. The
+This project is the follow up to a recent prototype (image below) for a device to deter animals and large birds. The
 original prototype used a pimornoi pan tilt hat but the servos
 did not have the power to support the waterpistol componets well.   Although it did work it still needed alot of improvements...
 ![Prototype](docs/images/prototype.png)
 
-
+Curerntly have provided object detection models in the imx500 format (`.rpk`) for __Herons__, __Jays__, __Magpies__, __Pigeons__, __Squirrels__, __Cats__ and __Foxes__.  There
+are also models that are trained on all of these or a combination of them.  But it should work with any object detection model in this fomrat.  Will converting them to
+work on the Raspberry PI AI Kit/Hat (Halio) soon.  See [AI Models](#ai-models-for-ai-camera) for list of them.
 
 This is still a work in progress and is shared to allow others to create their own personal devices to use. 
 If you are beginner with a raspberry PI you may wish to try other projects first and get familiar with them. 
