@@ -15,12 +15,11 @@ This is still a work in progress and is shared to allow others to create their o
 If you are beginner with a raspberry PI you may wish to try other projects first and get familiar with them. 
 We will be releasing a kit to purchase that will make it easier and a fully assembled product. 
 
-Currently, it has only been tested on a Raspberry Pi 4b with an AI Camera, but I plan to do the following variations
+Currently, it has only been tested on a Raspberry Pi 4b with an AI Camera, Raspberry Pi 5 with an AI Camera and Raspberry Pi Zero 2w with an AI Camera, but I plan to do the following variations
 
-* Raspberry Pi 5 with AI camera
 * Raspberry Pi 5 or 4b any camera
 * Raspberry Pi 5 with any camera plus AI accelerator 
-* Raspberry Pi Zero 2w with AI camera (a compact version)
+
 ***
 # Contents
 [Main Part List](#main-part-list)  
