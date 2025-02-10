@@ -6,7 +6,6 @@ This project is the follow up to a recent prototype (image below) for a device t
 original prototype used a pimornoi pan tilt hat but the servos
 did not have the power to support the waterpistol componets well.   Although it did work it still needed alot of improvements...
 ![Prototype](docs/images/prototype.png)
-![video](docs/videos/models_test.mp4)
 
 Curerntly have provided object detection models in the imx500 format (`.rpk`) for __Herons__, __Jays__, __Magpies__, __Pigeons__, __Squirrels__, __Cats__ and __Foxes__.  There
 are also models that are trained on all of these or a combination of them.  But it should work with any object detection model in this fomrat.  Will converting them to
