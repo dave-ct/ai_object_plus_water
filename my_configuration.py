@@ -29,18 +29,18 @@ TILT_SERVO_CHANNEL = 1
 REPLAY_PIN = 14
 
 # How many degrees to move per pixel offset when tracking an object
-PAN_DEG_PER_PIXEL = 0.0045
-TILT_DEG_PER_PIXEL = 0.00457
+PAN_DEG_PER_PIXEL = 0.016
+TILT_DEG_PER_PIXEL = 0.016
 
 # Reverse directions if needed (if you go up instead of down and left instead of right)
 PAN_INVERT = True  # If True, pan movement is inverted
 TILT_INVERT = True  # If True, tilt movement is inverted
 
 # Zone around center in which we do NOT move (pixels) when tracking, so if the we are within dead_zone (in the centre of the image) we wont move any further
-DEAD_ZONE = 40
+DEAD_ZONE = 60
 
 #Smoothing
-ALPHA = 0.5        # blending factor: 0.3..0.7 typical
+ALPHA = 1.0        # blending factor: 0.3..0.7 typical
 FADE_FRAMES = 3    # how many consecutive frames with no detection before we remove the box
 
 # Set the default PanTilt home angles when it starts up

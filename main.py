@@ -87,9 +87,6 @@ FADE_FRAMES          = config.FADE_FRAMES
 #Variable for smoothed boxes
 smoothed_boxes = {}  # { category_id: { "box": (x, y, w, h), "no_update_count": 0 } }
 
-# Todo Move to configuration
-last_move_time = 0  # Time when the last movement command was issued
-MOVE_INTERVAL = 0.01  # Minimum time between move commands (in seconds)
 
 
 
@@ -975,24 +972,27 @@ def do_frame_callback(request):
             pan_tilt.move_home_async()
 
     # 4) Pan/tilt: maybe track the first smoothed box if you want
-    if is_acquired and smoothed_dets and auto_mode:
-        first_box = smoothed_dets[0]["box"]  # (x, y, w, h)
-        (x, y, w, h) = first_box
+    # if is_acquired and smoothed_dets and auto_mode:
+    #     first_box = smoothed_dets[0]["box"]  # (x, y, w, h)
+    #     (x, y, w, h) = first_box
+    #     main_w, main_h = picam2.stream_configuration("main")["size"]
+    #     offset_x = (x + w/2) - (main_w / 2)
+    #     offset_y = (y + h/2) - (main_h / 2)
+    #     pan_tilt.set_target_by_pixels(offset_x, offset_y)
+
+    if is_acquired and raw_detections and auto_mode:
+        # Option A: Just pick the first detection
+        # first_det = raw_detections[0]
+
+        # Option B: Pick the detection with the highest confidence
+        best_det = max(raw_detections, key=lambda d: d.conf)
+
+        (x, y, w, h) = best_det.box  # (x, y, w, h)
         main_w, main_h = picam2.stream_configuration("main")["size"]
-        offset_x = (x + w/2) - (main_w / 2)
-        offset_y = (y + h/2) - (main_h / 2)
+        offset_x = (x + w / 2) - (main_w / 2)
+        offset_y = (y + h / 2) - (main_h / 2)
         pan_tilt.set_target_by_pixels(offset_x, offset_y)
 
-        # Check if enough time has passed since the last move
-        global last_move_time
-        if time.time() - last_move_time >= MOVE_INTERVAL:
-            last_move_time = time.time()
-            pan_tilt.set_target_by_pixels(offset_x, offset_y)
-            logger.debug("Movement command issued.")
-        else:
-            logger.debug("Movement command skipped due to debounce interval.")
-        # Then command the pan/tilt control
-        # pan_tilt.set_target_by_pixels(offset_x, offset_y)
 
     # 5) Draw bounding boxes on main (1:1) and lores (scaled)
     inside_box = False
