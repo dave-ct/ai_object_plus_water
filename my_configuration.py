@@ -39,6 +39,10 @@ TILT_INVERT = True  # If True, tilt movement is inverted
 # Zone around center in which we do NOT move (pixels) when tracking, so if the we are within dead_zone (in the centre of the image) we wont move any further
 DEAD_ZONE = 60
 
+#Show bounding boxes
+DISPLAY_BOXES_VIDEO = True
+DISPLAY_BOXES_PREVIEW = True
+
 #Smoothing
 ALPHA = 1.0        # blending factor: 0.3..0.7 typical
 FADE_FRAMES = 3    # how many consecutive frames with no detection before we remove the box
@@ -50,6 +54,9 @@ HOME_TILT = 20.0
 # Move smoothing, adjust to make the movement smoother or more aggressive
 MOVE_STEPS = 1
 MOVE_STEP_DELAY = 0.00
+
+# Fire water pistol on detections
+WATER_PISTOL_ARMED = True
 
 #Picamera settings
 

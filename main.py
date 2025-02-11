@@ -83,6 +83,10 @@ SAVE_DIRECTORY       = config.SAVE_DIRECTORY_NAME
 DELETE_CONVERTED_FILES = config.DELETE_CONVERTED_FILES
 ALPHA                = config.ALPHA
 FADE_FRAMES          = config.FADE_FRAMES
+DISPLAY_BOXES_VIDEO  = config.DISPLAY_BOXES_VIDEO
+DISPLAY_BOXES_PREVIEW = config.DISPLAY_BOXES_PREVIEW
+WATER_PISTOL_ARMED    = config.WATER_PISTOL_ARMED
+
 
 #Variable for smoothed boxes
 smoothed_boxes = {}  # { category_id: { "box": (x, y, w, h), "no_update_count": 0 } }
@@ -964,7 +968,9 @@ def do_frame_callback(request):
 
     if is_acquired and not was_acquired and auto_mode:
         recording_requested = True
-        water_pistol.start()
+        if WATER_PISTOL_ARMED:
+            water_pistol.start()
+
     elif was_acquired and not is_acquired and auto_mode:
         recording_stop_requested = True
         water_pistol.stop()
@@ -994,8 +1000,9 @@ def do_frame_callback(request):
         pan_tilt.set_target_by_pixels(offset_x, offset_y)
 
 
-    # 5) Draw bounding boxes on main (1:1) and lores (scaled)
+    # 5) Draw bounding boxes on main (1:1)
     inside_box = False
+
     if recording_manager.recording and len(smoothed_dets) > 0:
         main_w, main_h = picam2.stream_configuration("main")["size"]
         cx = main_w // 2
@@ -1005,18 +1012,19 @@ def do_frame_callback(request):
             if bx <= cx <= (bx + bw) and by <= cy <= (by + bh):
                 inside_box = True
                 break
-
-    with MappedArray(request, "main") as m:
-        main_array = m.array
-        draw_detections_on_frame(
-            main_array,
-            smoothed_dets,     # pass the "smoothed" list
-            intrinsics,
-            recording_manager.recording,
-            inside_box,
-            scale_x=1.0,
-            scale_y=1.0
-        )
+    if DISPLAY_BOXES_VIDEO:
+        with MappedArray(request, "main") as m:
+            main_array = m.array
+            draw_detections_on_frame(
+                main_array,
+                smoothed_dets,     # pass the "smoothed" list
+                intrinsics,
+                recording_manager.recording,
+                inside_box,
+                scale_x=1.0,
+                scale_y=1.0
+            )
+    # 6) Draw bounding boxes on lowres (scaled)
 
     with MappedArray(request, "lores") as lores_m:
         lores_frame = cv2.cvtColor(lores_m.array, cv2.COLOR_YUV2BGR_I420)
@@ -1026,15 +1034,16 @@ def do_frame_callback(request):
         sx = lores_w / float(main_w)
         sy = lores_h / float(main_h)
 
-        draw_detections_on_frame(
-            lores_frame,
-            smoothed_dets,     # pass the smoothed list
-            intrinsics,
-            recording_manager.recording,
-            inside_box,
-            scale_x=sx,
-            scale_y=sy
-        )
+        if DISPLAY_BOXES_PREVIEW:
+            draw_detections_on_frame(
+                lores_frame,
+                smoothed_dets,     # pass the smoothed list
+                intrinsics,
+                recording_manager.recording,
+                inside_box,
+                scale_x=sx,
+                scale_y=sy
+            )
         latest_frame = lores_frame.copy()
 
 
