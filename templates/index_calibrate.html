@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Camera Calibration Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    canvas { border: 1px solid #333; margin-bottom: 20px; }
+    #beforeContainer, #afterContainer { margin-bottom: 30px; }
+    #instructions { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Camera Calibration Tool</h1>
+  <div id="instructions">
+    <p><strong>Step 1:</strong> The top canvas shows the current camera image with a green cross marking its center.</p>
+    <p>Click on the image where you want that center to be relocated (your target point). A second green cross will appear at that point.</p>
+  </div>
+
+  <div id="beforeContainer">
+    <h2>Before Movement</h2>
+    <canvas id="beforeCanvas"></canvas>
+  </div>
+
+  <div id="afterContainer" style="display: none;">
+    <h2>After Movement</h2>
+    <canvas id="afterCanvas"></canvas>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    // Use the main resolution passed from the server.
+    const imageWidth = {{ main_resolution[0] }};
+    const imageHeight = {{ main_resolution[1] }};
+
+    // Set up canvases.
+    const beforeCanvas = document.getElementById("beforeCanvas");
+    const afterCanvas = document.getElementById("afterCanvas");
+    beforeCanvas.width = imageWidth;
+    beforeCanvas.height = imageHeight;
+    afterCanvas.width = imageWidth;
+    afterCanvas.height = imageHeight;
+
+    const beforeCtx = beforeCanvas.getContext("2d");
+    const afterCtx = afterCanvas.getContext("2d");
+
+    // Global variable to store the clicked coordinate (in full resolution).
+    let clickedCoord = null;
+
+    // Load an image from /capture_image.
+    function loadCapture(callback) {
+      const img = new Image();
+      img.onload = function() {
+        callback(img);
+      };
+      // Add a timestamp to bypass caching.
+      img.src = "/capture_image?ts=" + new Date().getTime();
+    }
+
+    // Draw a green cross at the center of the canvas.
+    function drawCenterCross(ctx, width, height) {
+      ctx.strokeStyle = "lime";
+      ctx.lineWidth = 2;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const size = 10;
+      ctx.beginPath();
+      ctx.moveTo(centerX - size, centerY);
+      ctx.lineTo(centerX + size, centerY);
+      ctx.moveTo(centerX, centerY - size);
+      ctx.lineTo(centerX, centerY + size);
+      ctx.stroke();
+    }
+
+    // Draw a green cross at a given (x, y) coordinate.
+    function drawClickCross(ctx, x, y) {
+      ctx.strokeStyle = "lime";
+      ctx.lineWidth = 2;
+      const size = 10;
+      ctx.beginPath();
+      ctx.moveTo(x - size, y);
+      ctx.lineTo(x + size, y);
+      ctx.moveTo(x, y - size);
+      ctx.lineTo(x, y + size);
+      ctx.stroke();
+    }
+
+    // Draw the "before" image with overlays.
+    function drawBeforeImage() {
+      loadCapture(function(img) {
+        beforeCtx.clearRect(0, 0, imageWidth, imageHeight);
+        beforeCtx.drawImage(img, 0, 0, imageWidth, imageHeight);
+        drawCenterCross(beforeCtx, imageWidth, imageHeight);
+        // If a click has been made, mark that point.
+        if (clickedCoord) {
+          drawClickCross(beforeCtx, clickedCoord.x, clickedCoord.y);
+        }
+      });
+    }
+
+    // Initially load the before image.
+    drawBeforeImage();
+
+    // Handle clicks on the before canvas.
+    beforeCanvas.addEventListener("click", function(event) {
+      const rect = beforeCanvas.getBoundingClientRect();
+      // Convert the click coordinates to full-resolution coordinates.
+      const clickX = (event.clientX - rect.left) * (imageWidth / beforeCanvas.clientWidth);
+      const clickY = (event.clientY - rect.top) * (imageHeight / beforeCanvas.clientHeight);
+      clickedCoord = { x: clickX, y: clickY };
+
+      // Redraw the before image with the clicked cross.
+      drawBeforeImage();
+
+      // Send the clicked coordinates to the server for calibration.
+      fetch("/calibrate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ x: clickX, y: clickY })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Display calibration details.
+        document.getElementById("results").innerHTML = `
+          <p><strong>Current Angles:</strong> Pan ${data.current_angles.pan.toFixed(2)}°, Tilt ${data.current_angles.tilt.toFixed(2)}°</p>
+          <p><strong>Pixel Offset:</strong> X: ${data.pixel_offset.x.toFixed(0)} pixels, Y: ${data.pixel_offset.y.toFixed(0)} pixels</p>
+          <p><strong>Delta (Angle Adjustment):</strong> Pan ${data.delta.pan.toFixed(2)}°, Tilt ${data.delta.tilt.toFixed(2)}°</p>
+          <p><strong>New Angles:</strong> Pan ${data.new_angles.pan.toFixed(2)}°, Tilt ${data.new_angles.tilt.toFixed(2)}°</p>
+          <p>${data.message}</p>
+        `;
+
+        // Show the after canvas and load the new image.
+        document.getElementById("afterContainer").style.display = "block";
+        loadCapture(function(imgAfter) {
+          afterCtx.clearRect(0, 0, imageWidth, imageHeight);
+          afterCtx.drawImage(imgAfter, 0, 0, imageWidth, imageHeight);
+          drawCenterCross(afterCtx, imageWidth, imageHeight);
+        });
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        document.getElementById("results").innerText = "Error: " + err;
+      });
+    });
+  </script>
+</body>
+</html>
+

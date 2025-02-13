@@ -487,6 +487,7 @@ def set_mode():
     mode = request.args.get("mode", "auto")
     if mode.lower() == "auto":
         water_pistol.stop()
+        target_tracker.reset()
         pan_tilt_control.move_to(HOME_PAN, HOME_TILT, steps=MOVE_STEPS, step_delay=MOVE_STEP_DELAY)
         auto_mode = True
         logger.info("Switched to AUTO mode")
@@ -592,13 +593,16 @@ class PanTiltControllerWrapper:
         self.move_steps = move_steps
         self.move_step_delay = move_step_delay
         # Move to home on init
+        time.sleep(1.0)
         self.home()
 
     def home(self):
         pan_tilt_control.move_to(
             HOME_PAN, HOME_TILT,
-            steps=self.move_steps,
-            step_delay=self.move_step_delay
+            # steps=self.move_steps,
+            # step_delay=self.move_step_delay
+            steps=10,
+            step_delay=0.1
         )
 
     def set_target_by_pixels(self, offset_x, offset_y):
@@ -635,8 +639,10 @@ class PanTiltControllerWrapper:
             self.is_moving = True
             pan_tilt_control.move_to(
                 HOME_PAN, HOME_TILT,
-                steps=self.move_steps,
-                step_delay=self.move_step_delay
+                # steps=self.move_steps,
+                # step_delay=self.move_step_delay
+                steps=10,
+                step_delay=0.1
             )
             self.is_moving = False
         threading.Thread(target=do_home, daemon=True).start()
@@ -727,6 +733,14 @@ class TargetTracker:
 
     def is_target_acquired(self):
         return self.target_acquired
+
+    def reset(self):
+        # Force a fresh
+        self.detection_timestamps.clear()
+        self.target_acquired = False
+        self.last_detection_time = None
+
+        logger.info("[TargetTracker] State has been reset.")
 
 # Simple detection container
 class Detection:

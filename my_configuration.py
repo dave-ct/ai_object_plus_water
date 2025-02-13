@@ -29,8 +29,8 @@ TILT_SERVO_CHANNEL = 1
 REPLAY_PIN = 14
 
 # How many degrees to move per pixel offset when tracking an object
-PAN_DEG_PER_PIXEL = 0.016
-TILT_DEG_PER_PIXEL = 0.016
+PAN_DEG_PER_PIXEL = 0.044
+TILT_DEG_PER_PIXEL = 0.045
 
 # Reverse directions if needed (if you go up instead of down and left instead of right)
 PAN_INVERT = True  # If True, pan movement is inverted
@@ -52,8 +52,8 @@ HOME_PAN  = 0.0
 HOME_TILT = 20.0
 
 # Move smoothing, adjust to make the movement smoother or more aggressive
-MOVE_STEPS = 1
-MOVE_STEP_DELAY = 0.00
+MOVE_STEPS = 5
+MOVE_STEP_DELAY = 0.05
 
 # Fire water pistol on detections
 WATER_PISTOL_ARMED = True
